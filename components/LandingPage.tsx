@@ -17,7 +17,6 @@ import {
 import ThemeToggle from './ThemeToggle';
 import AppLogo from './AppLogo';
 import Reveal from './Reveal';
-import HeroCharacter from './HeroCharacter';
 
 const FEATURES = [
   {
@@ -159,10 +158,8 @@ export default function LandingPage() {
             </p>
           </Reveal>
 
-          {/* Floating product mockup, with a waving student peeking out from
-              behind it ------------------------------------------------- */}
+          {/* Floating product mockup ------------------------------------ */}
           <Reveal delayMs={150} className="relative mx-auto w-full max-w-sm min-w-0">
-            <HeroCharacter className="pointer-events-none absolute -left-6 sm:-left-14 bottom-2 w-32 sm:w-44 h-auto -z-10" />
             <div className="relative animate-float">
               <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[0_1px_2px_var(--shadow),0_32px_60px_-16px_var(--shadow)] rotate-[-2deg]">
                 <div className="flex items-center gap-2 rounded-full bg-[var(--surface-2)] px-3 py-2">
