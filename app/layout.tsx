@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider } from "@/components/SessionProvider";
 import { LibraryProvider } from "@/components/LibraryProvider";
 import { ToastProvider } from "@/components/ToastProvider";
+import PageTransition from "@/components/PageTransition";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
     title: "CS Hub",
   },
   icons: {
-    icon: [{ url: "/icons/logo.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/icons/logo.svg", type: "image/svg+xml" },
+    ],
     apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
@@ -72,7 +77,9 @@ export default function RootLayout({
         <ServiceWorkerRegister />
         <SessionProvider>
           <LibraryProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <ToastProvider>
+              <PageTransition>{children}</PageTransition>
+            </ToastProvider>
           </LibraryProvider>
         </SessionProvider>
       </body>

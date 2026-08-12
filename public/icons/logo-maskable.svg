@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>CS Resource Hub</title>
+  <rect width="64" height="64" fill="#2563eb"/>
+  <g transform="translate(32 32) scale(0.72) translate(-32 -32)">
+    <path d="M12 16.5A5.5 5.5 0 0 1 17.5 11H29c4.4 0 8 3.6 8 8v31.5A8.5 8.5 0 0 0 29 47H17.5a5.5 5.5 0 0 0-5.5 5.5z" fill="#fff"/>
+    <path d="M52 16.5A5.5 5.5 0 0 0 46.5 11H35c-4.4 0-8 3.6-8 8v31.5a8.5 8.5 0 0 1 8-3.5h11.5a5.5 5.5 0 0 1 5.5 5.5z" fill="#dbe6fe"/>
+    <path d="m27 34 4.5 4.5L41 28" fill="none" stroke="#2563eb" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+  </g>
+</svg>

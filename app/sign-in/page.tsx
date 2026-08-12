@@ -6,17 +6,19 @@ import { useSearchParams } from 'next/navigation';
 import { MailCheck } from 'lucide-react';
 import PageShell from '@/components/PageShell';
 
-const EMAIL_DOMAIN = '@st.knust.edu.gh';
-// TEMPORARY(dev-only): mirrors the gmail.com allowance in lib/auth.ts so the
-// form doesn't block testing email delivery. Remove before deployment.
-const ALLOWED_EMAIL_DOMAINS = [EMAIL_DOMAIN, '@gmail.com'];
+const GMAIL_DOMAIN = '@gmail.com';
+const KNUST_DOMAIN = '@st.knust.edu.gh';
+// Gmail is the primary sign-in domain for now — KNUST mail delivery isn't
+// reliable yet, so students are steered to Gmail rather than their KNUST
+// inbox. The KNUST domain stays accepted so it keeps working once that's fixed.
+const ALLOWED_EMAIL_DOMAINS = [GMAIL_DOMAIN, KNUST_DOMAIN];
 
 // NextAuth redirects back to this page (pages.signIn in lib/auth.ts doubles
 // as the error page) with ?error=<code> when the magic link fails to verify.
 const CALLBACK_ERROR_MESSAGES: Record<string, string> = {
   Verification:
     'That link expired, was already used, or was opened automatically by your email app before you clicked it. Request a new one below.',
-  AccessDenied: 'Sign-in was denied for that address. Use your KNUST student email.',
+  AccessDenied: 'Sign-in was denied for that address. Use your email address.',
   Configuration: 'Sign-in is temporarily misconfigured. Try again shortly.',
 };
 
@@ -50,7 +52,7 @@ export default function SignInPage() {
             <MailCheck className="w-6 h-6 text-[var(--text-primary)]" aria-hidden="true" />
           </div>
           <h1 className="mt-4 text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-            Check your KNUST inbox
+            Check your inbox
           </h1>
           <p className="mt-1.5 text-sm text-[var(--text-muted)]">
             We sent a sign-in link to <span className="font-medium text-[var(--text-primary)]">{trimmed}</span>.
@@ -84,7 +86,7 @@ export default function SignInPage() {
       <div className="max-w-sm mx-auto mt-6 bg-[var(--surface)] rounded-3xl p-6 shadow-[0_2px_8px_var(--shadow)]">
         <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Sign in</h1>
         <p className="mt-1.5 text-sm text-[var(--text-muted)]">
-          Sign in with your KNUST student email — no password needed.
+          Sign in with your email — no password needed.
         </p>
 
         {callbackError && (
@@ -95,31 +97,31 @@ export default function SignInPage() {
 
         <form onSubmit={handleSubmit} className="mt-5">
           <label
-            htmlFor="knust-email"
+            htmlFor="sign-in-email"
             className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5"
           >
-            KNUST email
+            Email
           </label>
           <input
-            id="knust-email"
+            id="sign-in-email"
             type="email"
             autoComplete="email"
             autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onBlur={() => setTouched(true)}
-            placeholder="yourname@st.knust.edu.gh"
+            placeholder="yourname@gmail.com"
             aria-invalid={touched && !isValid}
-            aria-describedby="knust-email-hint"
+            aria-describedby="sign-in-email-hint"
             className="w-full h-11 px-3 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] placeholder-[var(--text-subtle)] text-sm outline-none focus:border-[var(--focus)]"
           />
           <p
-            id="knust-email-hint"
+            id="sign-in-email-hint"
             className={`mt-1.5 text-xs ${
               touched && !isValid ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'
             }`}
           >
-            Only {EMAIL_DOMAIN} addresses can sign in.
+            Use your Gmail address to sign in.
           </p>
 
           <button

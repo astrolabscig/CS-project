@@ -47,14 +47,14 @@ function AddStudentForm({ onDone }: { onDone: () => void }) {
     <form onSubmit={handleSubmit} className="space-y-3">
       <div>
         <label htmlFor="new-student-email" className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
-          KNUST email
+          Email
         </label>
         <input
           id="new-student-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="e.g. jbafful5@st.knust.edu.gh"
+          placeholder="e.g. jbafful5@gmail.com"
           className="w-full h-11 px-3 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] placeholder-[var(--text-subtle)] text-sm outline-none focus:border-[var(--focus)]"
         />
       </div>
@@ -75,7 +75,7 @@ function AddStudentForm({ onDone }: { onDone: () => void }) {
       </div>
       {touched && !isValid && (
         <p className="text-xs text-[var(--text-muted)]">
-          Enter a KNUST email and a 7-digit index number. The student&apos;s level is computed
+          Enter an email and a 7-digit index number. The student&apos;s level is computed
           automatically.
         </p>
       )}

@@ -42,7 +42,7 @@ export default function ProfilePage() {
         <dl className="mt-5 space-y-3 border-t border-[var(--border)] pt-4">
           <div className="flex items-center gap-3">
             <Mail className="w-4 h-4 shrink-0 text-[var(--text-subtle)]" aria-hidden="true" />
-            <dt className="sr-only">KNUST email</dt>
+            <dt className="sr-only">Email</dt>
             <dd className="text-sm text-[var(--text-primary)] truncate">{session.email}</dd>
           </div>
           <div className="flex items-center gap-3">

@@ -6,16 +6,16 @@ import { sendVerificationRequest } from '@/lib/authEmail';
 
 export const STUDENT_EMAIL_DOMAIN = '@st.knust.edu.gh';
 
-// TEMPORARY(dev-only): gmail.com is allowed alongside the KNUST domain so
-// email delivery can be tested without a KNUST mailbox. Remove '@gmail.com'
-// before any real deployment — the design doc requires KNUST-only sign-in.
+// Gmail is the primary sign-in domain for now — KNUST mail delivery isn't
+// reliable yet, so students are steered to Gmail rather than their KNUST
+// inbox. The KNUST domain stays accepted so it keeps working once that's fixed.
 const ALLOWED_EMAIL_DOMAINS = [STUDENT_EMAIL_DOMAIN, '@gmail.com'];
 
 export function normalizeStudentEmail(identifier: string) {
   const email = identifier.trim().toLowerCase();
   const at = email.lastIndexOf('@');
   if (at <= 0 || email.indexOf('@') !== at || !ALLOWED_EMAIL_DOMAINS.some((domain) => email.endsWith(domain))) {
-    throw new Error('Use your KNUST student email address.');
+    throw new Error('Use a valid email address.');
   }
   return email;
 }

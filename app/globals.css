@@ -174,3 +174,101 @@
     animation: none;
   }
 }
+
+/* App-wide interaction motion ------------------------------------------
+   A single base-layer rule gives every interactive element (buttons,
+   links, inputs, nav rows, pills) a smooth default transition instead of
+   each component wiring one up individually — most of the app never had
+   a `transition` class at all before this. */
+:root {
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    transition-property: background-color, color, border-color, box-shadow, opacity, transform;
+    transition-duration: 180ms;
+    transition-timing-function: var(--ease-smooth);
+  }
+
+  button:not(:disabled):active,
+  [role="button"]:not([aria-disabled="true"]):active {
+    transform: scale(0.97);
+  }
+}
+
+/* Route-level fade + rise, replayed on every navigation via a pathname key
+   (see PageTransition.tsx). */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: page-fade-in 0.32s var(--ease-smooth) both;
+}
+
+/* Drawer/modal entrance (Drawer.tsx) */
+@keyframes drawer-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes drawer-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.drawer-scrim-in {
+  animation: drawer-scrim-in 0.18s ease-out both;
+}
+
+.drawer-panel-in {
+  animation: drawer-panel-in 0.24s var(--ease-smooth) both;
+}
+
+/* Toast entrance (ToastProvider.tsx) */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast-in {
+  animation: toast-in 0.25s var(--ease-smooth) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition,
+  .drawer-scrim-in,
+  .drawer-panel-in,
+  .toast-in {
+    animation: none;
+  }
+}

@@ -38,7 +38,7 @@ export async function POST(request: Request) {
   try {
     email = normalizeStudentEmail(parsed.data.email);
   } catch {
-    return jsonError('Use a KNUST student email address.');
+    return jsonError('Use a valid email address.');
   }
 
   const result = computeKnustLevel(parsed.data.indexNumber);

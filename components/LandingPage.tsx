@@ -21,8 +21,8 @@ import Reveal from './Reveal';
 const FEATURES = [
   {
     icon: Lock,
-    title: 'KNUST-verified, always',
-    body: 'Sign in with your st.knust.edu.gh email. No passwords to leak, no outsiders in the room — just a magic link to your own inbox.',
+    title: 'Verified sign-in, always',
+    body: 'Sign in with your email. No passwords to leak, no outsiders in the room — just a magic link to your own inbox.',
   },
   {
     icon: Search,
@@ -52,7 +52,7 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { title: 'Sign in', body: 'One magic link to your KNUST email — no password to remember or forget.' },
+  { title: 'Sign in', body: 'One magic link to your email — no password to remember or forget.' },
   { title: 'Land on your level', body: 'Students and reps see only their own level. Nothing to filter past.' },
   { title: 'Open a course', body: 'Pick a semester, pick a course, see every resource ever uploaded to it.' },
   { title: 'Download & go', body: 'File size up front, signed link, done. Back to studying, not searching.' },
@@ -142,7 +142,7 @@ export default function LandingPage() {
                 href="/sign-in"
                 className="group inline-flex items-center gap-2 min-h-12 px-6 rounded-full text-sm font-semibold bg-[var(--accent)] text-[var(--accent-fg)] shadow-[0_1px_2px_var(--shadow),0_16px_32px_-12px_var(--shadow)] transition-transform hover:-translate-y-0.5"
               >
-                Sign in with KNUST email
+                Sign in with email
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </Link>
               <a
@@ -154,7 +154,7 @@ export default function LandingPage() {
             </div>
 
             <p className="mt-6 text-xs text-[var(--text-subtle)]">
-              No passwords. No public access. Just your st.knust.edu.gh mailbox.
+              No passwords. No public access. Just your own mailbox.
             </p>
           </Reveal>
 
@@ -390,14 +390,14 @@ export default function LandingPage() {
                 Stop scrolling WhatsApp for notes.
               </h2>
               <p className="mt-3 max-w-md mx-auto text-sm sm:text-base text-[var(--text-muted)]">
-                Sign in with your KNUST student email and find everything for your level in
+                Sign in with your email and find everything for your level in
                 seconds.
               </p>
               <Link
                 href="/sign-in"
                 className="mt-8 inline-flex items-center gap-2 min-h-12 px-7 rounded-full text-sm font-semibold bg-[var(--accent)] text-[var(--accent-fg)] shadow-[0_1px_2px_var(--shadow),0_16px_32px_-12px_var(--shadow)] transition-transform hover:-translate-y-0.5"
               >
-                Sign in with KNUST email
+                Sign in with email
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </Link>
             </div>

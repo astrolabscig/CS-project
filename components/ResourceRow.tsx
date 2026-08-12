@@ -40,7 +40,7 @@ export default function ResourceRow({ resource }: { resource: Resource }) {
       <button
         type="button"
         onClick={handleAction}
-        className="shrink-0 flex items-center gap-1.5 px-4 min-h-11 rounded-full text-xs font-semibold bg-[var(--accent)] text-[var(--accent-fg)] shadow-[0_1px_2px_var(--shadow)]"
+        className="shrink-0 flex items-center gap-1.5 px-4 min-h-11 rounded-full text-xs font-semibold bg-[var(--accent)] text-[var(--accent-fg)] shadow-[0_1px_2px_var(--shadow)] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_var(--shadow)]"
       >
         {isExternal ? (
           <>
