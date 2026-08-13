@@ -47,22 +47,17 @@ export default function Sidebar({ activeLevel, onSelectLevel, open, onClose }: S
         />
       )}
 
-      {/* Native bottom sheet on mobile (slides up from the bottom, capped
-          height, own internal scroll) — a side drawer reads as a shrunk
-          desktop pattern on a phone. On desktop it reverts to a normal flex
-          child stretched to the full height of the content row by the
-          parent's items-stretch, so it never scrolls away with <main> (only
-          <main> scrolls — see page layouts). */}
+      {/* Off-canvas side drawer on mobile (slides in from the left, full
+          viewport height, own internal scroll). On desktop it reverts to a
+          normal flex child stretched to the full height of the content row
+          by the parent's items-stretch, so it never scrolls away with
+          <main> (only <main> scrolls — see page layouts). */}
       <aside
-        className={`fixed inset-x-0 bottom-0 md:static md:inset-x-auto md:bottom-auto md:left-0 z-30 shrink-0 w-full md:w-[220px] max-h-[80vh] md:max-h-none rounded-t-3xl md:rounded-2xl bg-[var(--surface)] md:border md:border-[var(--border)] shadow-[0_8px_30px_var(--shadow)] md:shadow-[0_1px_2px_var(--shadow),0_8px_24px_-6px_var(--shadow)] md:my-4 md:ml-4 transform transition-transform duration-200 ease-out md:translate-y-0 flex flex-col md:h-auto ${
+        className={`fixed top-16 bottom-0 md:static md:top-auto md:bottom-auto left-0 z-30 shrink-0 w-64 md:w-[220px] md:rounded-2xl bg-[var(--surface)] md:border md:border-[var(--border)] shadow-[0_1px_2px_var(--shadow),0_8px_24px_-6px_var(--shadow)] md:my-4 md:ml-4 transform transition-transform duration-200 ease-out md:translate-x-0 flex flex-col md:h-auto ${
           collapsed ? 'md:w-16' : ''
-        } ${open ? 'translate-y-0' : 'translate-y-full'}`}
+        } ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="md:hidden flex justify-center pt-2 pb-1" aria-hidden="true">
-          <span className="h-1 w-10 rounded-full bg-[var(--border)]" />
-        </div>
-
-        <div className="flex items-center justify-between px-3 pt-3 pb-1 md:pt-3">
+        <div className="flex items-center justify-between px-3 pt-3 pb-1">
           {!collapsed && (
             <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-[var(--text-subtle)]">
               Levels

@@ -173,9 +173,9 @@ export default function RecommendedVideos({ course, canUpload }: { course: Cours
                     href={v.youtubeUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--text-primary)] hover:underline"
+                    className="flex min-w-0 items-center gap-1 text-sm font-semibold text-[var(--text-primary)] hover:underline"
                   >
-                    <span className="truncate">{v.title}</span>
+                    <span className="min-w-0 truncate">{v.title}</span>
                     <ExternalLink className="w-3 h-3 shrink-0" aria-hidden="true" />
                   </a>
                   <p className="text-xs text-[var(--text-muted)] truncate">
@@ -230,7 +230,7 @@ export default function RecommendedVideos({ course, canUpload }: { course: Cours
               href={v.youtubeUrl}
               target="_blank"
               rel="noreferrer"
-              className="group block rounded-2xl overflow-hidden bg-[var(--surface)] border border-[var(--border)] shadow-[0_1px_2px_var(--shadow)] transition-shadow duration-200 hover:shadow-[0_12px_28px_-8px_var(--shadow)]"
+              className="group block min-w-0 rounded-2xl overflow-hidden bg-[var(--surface)] border border-[var(--border)] shadow-[0_1px_2px_var(--shadow)] transition-shadow duration-200 hover:shadow-[0_12px_28px_-8px_var(--shadow)]"
             >
               <div className="aspect-video bg-[var(--surface-2)]">
                 {v.thumbnailUrl && (
@@ -238,9 +238,9 @@ export default function RecommendedVideos({ course, canUpload }: { course: Cours
                   <img src={v.thumbnailUrl} alt="" className="w-full h-full object-cover" />
                 )}
               </div>
-              <div className="p-3">
-                <p className="text-sm font-semibold text-[var(--text-primary)] line-clamp-2">{v.title}</p>
-                <p className="mt-1 text-xs text-[var(--text-muted)] truncate">{v.channelName}</p>
+              <div className="min-w-0 p-3">
+                <p className="min-w-0 text-sm font-semibold text-[var(--text-primary)] line-clamp-2 break-words">{v.title}</p>
+                <p className="mt-1 min-w-0 text-xs text-[var(--text-muted)] truncate">{v.channelName}</p>
                 <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-[var(--text-subtle)]">
                   {formatCount(v.viewCount)} views
                   <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />

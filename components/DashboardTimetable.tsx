@@ -113,7 +113,7 @@ export default function DashboardTimetable({ level }: { level: Level | null }) {
           No timetable published for this level yet.
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {sourceUploadIds.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {sourceUploadIds.map((id) => (
@@ -131,31 +131,31 @@ export default function DashboardTimetable({ level }: { level: Level | null }) {
 
           {grouped.map(({ key, label, sessions: daySessions }) => (
             <div key={key}>
-              <h3 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--text-subtle)] mb-2">
+              <h3 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-3 pb-1 border-b border-[var(--border)]">
                 <CalendarClock className="w-3.5 h-3.5" aria-hidden="true" />
                 {label}
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {daySessions.map((session) => (
                   <div
                     key={session.id}
-                    className="flex items-center gap-3 bg-[var(--surface)] border border-[var(--border)] rounded-2xl px-3.5 py-3 shadow-[0_1px_2px_var(--shadow)]"
+                    className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl px-4 py-3 shadow-[0_1px_2px_var(--shadow),0_6px_18px_-8px_var(--shadow)]"
                   >
-                    <div className="shrink-0 w-24 text-xs font-semibold tabular-nums text-[var(--text-primary)]">
-                      {formatTime12h(session.startTime)}
-                      <span className="block text-[10px] font-normal text-[var(--text-subtle)]">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-base font-bold tabular-nums text-[var(--text-primary)]">
+                        {formatTime12h(session.startTime)}
+                      </span>
+                      <span className="text-xs font-medium text-[var(--text-subtle)]">
                         – {formatTime12h(session.endTime)}
                       </span>
                     </div>
-                    <div className="flex-1 min-w-0 border-l border-[var(--border)] pl-3">
-                      <p className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text-primary)]">
-                        <span className="shrink-0 font-mono text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-[var(--surface-2)] text-[var(--text-subtle)]">
-                          {session.courseCode}
-                        </span>
-                        <span className="truncate">{session.courseTitle}</span>
-                      </p>
-                      <p className="text-xs text-[var(--text-muted)] truncate">{session.venue || 'Venue TBA'}</p>
+                    <div className="mt-2 flex items-center gap-2 flex-wrap">
+                      <span className="shrink-0 inline-flex items-center font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--accent)] text-[var(--accent-fg)]">
+                        {session.courseCode}
+                      </span>
+                      <span className="min-w-0 text-sm font-bold text-[var(--text-primary)]">{session.courseTitle}</span>
                     </div>
+                    <p className="mt-1 text-xs font-medium text-[var(--text-muted)]">{session.venue || 'Venue TBA'}</p>
                   </div>
                 ))}
               </div>
