@@ -8,6 +8,7 @@ import FilterPills from '@/components/FilterPills';
 import ResourceRow from '@/components/ResourceRow';
 import UploadResourceDrawer from '@/components/UploadResourceDrawer';
 import RequestMaterialDrawer from '@/components/RequestMaterialDrawer';
+import RecommendedVideos from '@/components/RecommendedVideos';
 import { useLibrary } from '@/components/LibraryProvider';
 import { useSession } from '@/components/SessionProvider';
 import { RESOURCE_TYPE_LABELS } from '@/lib/resourceType';
@@ -114,6 +115,8 @@ export default function CourseDetailPage({ params }: { params: Promise<{ code: s
           />
         )}
       </div>
+
+      <RecommendedVideos course={course} canUpload={canUpload} />
 
       <div className="mt-6 pt-5 border-t border-[var(--border)]">
         <button

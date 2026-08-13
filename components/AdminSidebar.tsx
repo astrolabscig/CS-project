@@ -20,7 +20,10 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex md:sticky md:top-20 md:self-start shrink-0 md:ml-4 md:mb-4 w-[220px] md:rounded-2xl bg-[var(--surface)] md:border md:border-[var(--border)] shadow-[0_4px_16px_var(--shadow)] flex-col md:max-h-[calc(100vh-6rem)]">
+    // Stretched to the full height of the content row by the parent's
+    // items-stretch, so it never scrolls away with <main> (only <main>
+    // scrolls — see AdminPageShell).
+    <aside className="hidden md:flex md:h-auto shrink-0 md:my-4 md:ml-4 w-[220px] md:rounded-2xl bg-[var(--surface)] md:border md:border-[var(--border)] shadow-[0_4px_16px_var(--shadow)] flex-col">
       <p className="px-4 pt-4 pb-1 text-[11px] font-bold uppercase tracking-wider text-[var(--text-subtle)]">
         Admin
       </p>

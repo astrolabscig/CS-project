@@ -41,15 +41,18 @@ export default function Sidebar({ activeLevel, onSelectLevel, open, onClose }: S
     <>
       {open && (
         <div
-          className="fixed top-16 inset-x-0 bottom-0 z-20 bg-[var(--scrim)] md:hidden"
+          className="fixed top-16 inset-x-0 bottom-0 z-20 bg-[var(--scrim)] md:hidden drawer-scrim-in"
           onClick={onClose}
           aria-hidden="true"
         />
       )}
 
-      {/* Floating white panel, inset from the canvas edge (UI-SPEC v2) */}
+      {/* Floating panel, inset from the canvas edge. Fixed on mobile (off-canvas
+          drawer overlay); on desktop it's a normal flex child stretched to the
+          full height of the content row by the parent's items-stretch, so it
+          never scrolls away with <main> (only <main> scrolls — see page layouts). */}
       <aside
-        className={`fixed md:sticky top-16 bottom-0 md:top-20 md:bottom-auto md:self-start left-0 z-30 shrink-0 md:ml-4 md:mb-4 md:rounded-2xl bg-[var(--surface)] md:border md:border-[var(--border)] shadow-[0_1px_2px_var(--shadow),0_8px_24px_-6px_var(--shadow)] transform transition-[transform,width] duration-200 md:translate-x-0 flex flex-col md:max-h-[calc(100vh-6rem)] ${
+        className={`fixed md:static top-16 bottom-0 md:top-auto md:bottom-auto left-0 z-30 shrink-0 md:my-4 md:ml-4 md:rounded-2xl bg-[var(--surface)] md:border md:border-[var(--border)] shadow-[0_1px_2px_var(--shadow),0_8px_24px_-6px_var(--shadow)] transform transition-transform duration-200 ease-out md:translate-x-0 flex flex-col md:h-auto ${
           collapsed ? 'md:w-16' : 'w-64 md:w-[220px]'
         } ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >

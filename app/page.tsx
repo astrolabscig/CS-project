@@ -48,10 +48,10 @@ export default function LibraryPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg)]">
+    <div className="h-screen overflow-hidden flex flex-col bg-[var(--bg)]">
       <TopBar onToggleSidebar={() => setSidebarOpen((v) => !v)} />
 
-      <div className="flex flex-1 items-start">
+      <div className="flex flex-1 min-h-0">
         <Sidebar
           activeLevel={activeLevel}
           onSelectLevel={isAdmin ? setManualLevel : () => {}}
@@ -59,7 +59,7 @@ export default function LibraryPage() {
           onClose={() => setSidebarOpen(false)}
         />
 
-        <main className="flex-1 min-w-0 p-4 sm:p-6 pb-24 md:pb-6">
+        <main className="flex-1 min-w-0 min-h-0 overflow-y-auto p-4 sm:p-6 pb-24 md:pb-6">
           <p className="text-sm text-[var(--text-muted)]">Browse courses and their resources.</p>
           <h1 className="mt-0.5 text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
             {activeLevel ? `Level ${activeLevel}` : 'Welcome'}

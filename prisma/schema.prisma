@@ -44,6 +44,12 @@ enum RequestStatus {
   DISMISSED
 }
 
+enum VideoStatus {
+  SUGGESTED
+  APPROVED
+  REJECTED
+}
+
 
 model User {
   id            String     @id @default(cuid())
@@ -63,6 +69,8 @@ model User {
   scopes        RepScope[]
   resources     Resource[]
   auditLogs     AuditLog[] @relation("AuditActor")
+  suggestedVideos RecommendedVideo[] @relation("VideoSuggestedBy")
+  approvedVideos  RecommendedVideo[] @relation("VideoApprovedBy")
   createdAt     DateTime   @default(now())
 }
 
@@ -129,6 +137,7 @@ model Course {
   departmentId Int
   department   Department @relation(fields: [departmentId], references: [id])
   resources    Resource[]
+  recommendedVideos RecommendedVideo[]
   createdAt    DateTime   @default(now())
   @@index([level, semester])
 }
@@ -159,6 +168,34 @@ model RepScope {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   level  Int
   @@unique([userId, level])
+}
+
+// AI-assisted, approval-gated video recommendations (YouTube Data API v3).
+// A suggestion is never visible to students until a rep/admin approves it —
+// no auto-publish under any circumstance. Rejected rows are kept (not hard
+// deleted) so the same video isn't re-suggested and for audit history.
+model RecommendedVideo {
+  id            Int         @id @default(autoincrement())
+  courseId      Int
+  course        Course      @relation(fields: [courseId], references: [id])
+  title         String
+  youtubeUrl    String
+  videoId       String
+  channelName   String
+  thumbnailUrl  String
+  viewCount     Int         @default(0)
+  likeCount     Int         @default(0)
+  qualityScore  Float       @default(0)
+  status        VideoStatus @default(SUGGESTED)
+  suggestedAt   DateTime    @default(now())
+  suggestedById String?
+  suggestedBy   User?       @relation("VideoSuggestedBy", fields: [suggestedById], references: [id], onDelete: SetNull)
+  approvedById  String?
+  approvedBy    User?       @relation("VideoApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt    DateTime?
+
+  @@unique([courseId, videoId])
+  @@index([courseId, status])
 }
 
 model MaterialRequest {
