@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { BookOpen, Inbox, ShieldAlert, Users } from 'lucide-react';
 import AdminPageShell from '@/components/AdminPageShell';
 import StatCard from '@/components/StatCard';
+import TimetableManagerCard from '@/components/TimetableManagerCard';
 import { useLibrary } from '@/components/LibraryProvider';
 import { useRequireRole } from '@/components/SessionProvider';
+import { ALL_LEVELS } from '@/lib/access';
 
 const ADMIN_SECTIONS = [
   { href: '/admin/courses', label: 'Manage courses', icon: BookOpen },
@@ -40,6 +42,8 @@ export default function AdminOverviewPage() {
         <StatCard label="Reps" value={reps} />
         <StatCard label="Open requests" value={openRequests} />
       </div>
+
+      <TimetableManagerCard levels={ALL_LEVELS} />
 
       {/* Desktop navigation lives in AdminSidebar; this list is the only way
           to reach admin sub-pages on mobile, where the sidebar is hidden. */}

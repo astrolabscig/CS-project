@@ -134,7 +134,7 @@ export default function AdminUsersPage() {
           return (
             <div
               key={user.email}
-              className={`bg-[var(--surface)] rounded-2xl p-5 shadow-[0_1px_3px_var(--shadow)] ${
+              className={`bg-[var(--surface)] rounded-2xl p-5 shadow-[0_1px_3px_var(--shadow)] transition-shadow duration-200 hover:shadow-[0_1px_3px_var(--shadow),0_10px_24px_-6px_var(--shadow)] ${
                 inactive ? 'opacity-60' : ''
               }`}
             >
@@ -158,7 +158,7 @@ export default function AdminUsersPage() {
                       inactive ? `Reactivated ${user.name}.` : `Deactivated ${user.name}.`
                     )
                   }
-                  className="shrink-0 min-h-9 px-3 rounded-full text-xs font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
+                  className="shrink-0 min-h-11 sm:min-h-9 px-3 rounded-full text-xs font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
                 >
                   {inactive ? 'Reactivate' : 'Deactivate'}
                 </button>
@@ -177,7 +177,7 @@ export default function AdminUsersPage() {
                         `${user.name} is now ${ROLE_LABELS[e.target.value as Role]}.`
                       )
                     }
-                    className="h-9 px-2 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-xs outline-none focus:border-[var(--focus)] disabled:opacity-60"
+                    className="h-11 sm:h-9 px-2 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-xs outline-none focus:border-[var(--focus)] disabled:opacity-60"
                   >
                     {ROLES.map((role) => (
                       <option key={role} value={role}>
@@ -199,7 +199,7 @@ export default function AdminUsersPage() {
                         `${user.name} moved to Level ${e.target.value}.`
                       )
                     }
-                    className="h-9 px-2 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-xs outline-none focus:border-[var(--focus)] disabled:opacity-60"
+                    className="h-11 sm:h-9 px-2 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-xs outline-none focus:border-[var(--focus)] disabled:opacity-60"
                   >
                     {user.level === null && (
                       <option value="" disabled>
@@ -221,7 +221,7 @@ export default function AdminUsersPage() {
                     onClick={() =>
                       handleUpdate(user, { recalculateLevel: true }, `Recalculated ${user.name}'s level.`)
                     }
-                    className="min-h-9 px-3 rounded-full text-xs font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-3)] disabled:opacity-60"
+                    className="min-h-11 sm:min-h-9 px-3 rounded-full text-xs font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-3)] disabled:opacity-60"
                   >
                     Recalculate level
                   </button>

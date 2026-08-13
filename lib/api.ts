@@ -54,6 +54,14 @@ export async function canWriteCourse(userId: string, role: string, courseId: num
   return Boolean(await prisma.repScope.findUnique({ where: { userId_level: { userId, level: course.level } } }));
 }
 
+/** Same write-scope rule as canWriteCourse, for level-wide resources (the
+ * timetable) that aren't tied to one course. */
+export async function canWriteLevel(userId: string, role: string, level: number) {
+  if (role === 'SUPER_ADMIN') return true;
+  if (role !== 'REP') return false;
+  return Boolean(await prisma.repScope.findUnique({ where: { userId_level: { userId, level } } }));
+}
+
 export async function audit(actorId: string | null | undefined, action: string, entity: string, entityId: string | number, metadata?: Prisma.InputJsonValue) {
   await prisma.auditLog.create({ data: { actorId: actorId ?? null, action, entity, entityId: String(entityId), metadata } });
 }

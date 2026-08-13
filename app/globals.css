@@ -5,72 +5,46 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Dark is the default identity (UI-SPEC "StudyStream-derived" v5) — :root
+   carries the dark values; [data-theme="light"] overrides them. Light mode
+   is not the fallback here, it's the override, which is why it lives in the
+   attribute selector instead of :root. */
 :root {
-  /* Surfaces — cool near-white canvas, crisp white cards (UI-SPEC v4 "Midnight") */
-  --bg: #f2f4f9;
-  --surface: #ffffff;
-  --surface-2: #eaeef5;
-  --surface-3: #dfe4ee;
+  /* Surfaces — near-black canvas, floating dark cards */
+  --bg: #0c0e13;
+  --surface: #151822;
+  /* Nested wells (rail, input fills) read as recessed relative to --surface
+     cards — deliberately darker than --surface, not lighter. */
+  --surface-2: #10121a;
+  --surface-3: #1c212c;
+  --surface-hover: #1f2430;
 
-  /* Top bar melts into the canvas */
-  --topbar-bg: #f2f4f9;
-  --topbar-fg: #12141a;
+  /* Icon rail + top strip: dark, near --bg, no separate "light bar" treatment */
+  --rail-bg: #0a0b10;
+  --topbar-bg: #0a0b10;
+  --topbar-fg: #f3f4f7;
 
   /* Text */
-  --text-primary: #12141a;
-  --text-muted: #62666f;
-  --text-subtle: #9297a1;
+  --text-primary: #f3f4f7;
+  --text-muted: #9a9daa;
+  --text-subtle: #6c6f7c;
 
   /* Lines & depth */
-  --border: #e1e5ee;
-  --focus: #2563eb;
-  --shadow: rgba(15, 23, 42, 0.09);
-  --scrim: rgba(8, 10, 18, 0.45);
-
-  /* Primary accent — electric blue pill (2026-08 palette swap, see UI-SPEC.md v4) */
-  --accent: #2563eb;
-  --accent-fg: #ffffff;
-  --accent-subtle: #dbe6fe;
-
-  /* Resource-type candy tints (strong text on -soft background) */
-  --type-slides: #7c3aed;
-  --type-slides-soft: #f1ebfe;
-  --type-notes: #0d9488;
-  --type-notes-soft: #dcf5f2;
-  --type-past-question: #e11d48;
-  --type-past-question-soft: #fdeaef;
-  --type-lab-manual: #16a34a;
-  --type-lab-manual-soft: #e6f7ec;
-  --type-book: #d97706;
-  --type-book-soft: #fdf1df;
-  --type-other: #52555b;
-  --type-other-soft: #ededf0;
-}
-
-[data-theme="dark"] {
-  /* Near-black "Midnight" canvas with glass-dark cards */
-  --bg: #06070c;
-  --surface: #101319;
-  --surface-2: #171b23;
-  --surface-3: #1f2430;
-
-  --topbar-bg: #06070c;
-  --topbar-fg: #f5f6fa;
-
-  --text-primary: #f5f6fa;
-  --text-muted: #9a9daa;
-  --text-subtle: #686b78;
-
-  --border: #232732;
-  --focus: #7aa8ff;
-  --shadow: rgba(0, 0, 0, 0.6);
+  --border: rgba(255, 255, 255, 0.08);
+  --focus: #6a54f0;
+  --shadow: rgba(124, 108, 246, 0.14); /* soft, faintly glowing, per spec */
   --scrim: rgba(0, 0, 0, 0.7);
 
-  /* Same electric blue family, brightened with near-black text for contrast on the dark canvas */
-  --accent: #7aa8ff;
-  --accent-fg: #06070c;
-  --accent-subtle: rgba(122, 168, 255, 0.16);
+  /* Primary accent — violet/indigo (UI-SPEC v5, StudyStream-derived). Spec's
+     example #7c6cf6 is lightened slightly toward #6a54f0 here: white
+     accent-fg text on the literal example clears ~4.2:1 (short of the 4.5:1
+     AA text threshold at the 14px/semibold sizes buttons/pills use in this
+     app); #6a54f0 clears ~5:1 while staying in the same violet/indigo hue. */
+  --accent: #6a54f0;
+  --accent-fg: #ffffff;
+  --accent-subtle: rgba(106, 84, 240, 0.18);
 
+  /* Resource-type candy tints (strong text on -soft background) */
   --type-slides: #a78bfa;
   --type-slides-soft: rgba(167, 139, 250, 0.16);
   --type-notes: #2dd4bf;
@@ -85,8 +59,44 @@
   --type-other-soft: rgba(185, 187, 193, 0.14);
 }
 
-[data-theme="dark"] .course-card {
-  --course-soft: color-mix(in srgb, var(--course-accent) 18%, var(--surface));
+[data-theme="light"] {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface-2: #f0f1f4;
+  --surface-3: #e7e9ee;
+  --surface-hover: #eceef2;
+
+  --rail-bg: #ffffff;
+  --topbar-bg: #f4f5f7;
+  --topbar-fg: #14151a;
+
+  --text-primary: #14151a;
+  --text-muted: #6b6d76;
+  --text-subtle: #93949e;
+
+  --border: #e2e3e8;
+  --focus: #6a54f0;
+  --shadow: rgba(15, 23, 42, 0.08);
+  --scrim: rgba(8, 10, 18, 0.45);
+
+  /* Same accent both themes — it's a self-contained pill fill (violet bg +
+     white text), its contrast doesn't depend on the surrounding canvas. */
+  --accent: #6a54f0;
+  --accent-fg: #ffffff;
+  --accent-subtle: #ece8fd;
+
+  --type-slides: #7c3aed;
+  --type-slides-soft: #f1ebfe;
+  --type-notes: #0d9488;
+  --type-notes-soft: #dcf5f2;
+  --type-past-question: #e11d48;
+  --type-past-question-soft: #fdeaef;
+  --type-lab-manual: #16a34a;
+  --type-lab-manual-soft: #e6f7ec;
+  --type-book: #d97706;
+  --type-book-soft: #fdf1df;
+  --type-other: #52555b;
+  --type-other-soft: #ededf0;
 }
 
 *:focus-visible {
@@ -103,7 +113,12 @@
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    /* Literal `none`, not translateY(0): a non-none transform — even an
+       identity one — makes this element a containing block for any
+       position:fixed descendant, which would otherwise pin fixed nav/modals
+       to this element's box instead of the viewport once the animation
+       settles (animation-fill-mode: both keeps the "to" value applied). */
+    transform: none;
   }
 }
 
@@ -196,6 +211,7 @@
     transition-timing-function: var(--ease-smooth);
   }
 
+  a:active,
   button:not(:disabled):active,
   [role="button"]:not([aria-disabled="true"]):active {
     transform: scale(0.97);
@@ -211,7 +227,12 @@
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    /* Literal `none` — see the comment on reveal-up above. This wrapper sits
+       between <body> and every page's content (PageTransition.tsx), so a
+       lingering non-none transform here breaks position:fixed for anything
+       nested inside it app-wide: BottomNav, the mobile Sidebar drawer/scrim,
+       and every Drawer.tsx modal. */
+    transform: none;
   }
 }
 
@@ -236,7 +257,7 @@
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
   }
 }
 
@@ -248,6 +269,36 @@
   animation: drawer-panel-in 0.24s var(--ease-smooth) both;
 }
 
+/* Drawer/modal exit (Drawer.tsx) — mirrors *-in above; duration must match
+   Drawer.tsx's EXIT_ANIMATION_MS so unmount happens right as this finishes. */
+@keyframes drawer-scrim-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes drawer-panel-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+}
+
+.drawer-scrim-out {
+  animation: drawer-scrim-out 0.18s ease-in both;
+}
+
+.drawer-panel-out {
+  animation: drawer-panel-out 0.18s var(--ease-smooth) both;
+}
+
 /* Toast entrance (ToastProvider.tsx) */
 @keyframes toast-in {
   from {
@@ -256,7 +307,7 @@
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
   }
 }
 
@@ -268,6 +319,8 @@
   .page-transition,
   .drawer-scrim-in,
   .drawer-panel-in,
+  .drawer-scrim-out,
+  .drawer-panel-out,
   .toast-in {
     animation: none;
   }

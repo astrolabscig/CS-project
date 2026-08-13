@@ -43,7 +43,7 @@ export default function AdminRequestsPage() {
           {requests.map((request) => (
             <div
               key={request.id}
-              className="bg-[var(--surface)] rounded-2xl p-5 shadow-[0_1px_3px_var(--shadow)]"
+              className="bg-[var(--surface)] rounded-2xl p-5 shadow-[0_1px_3px_var(--shadow)] transition-shadow duration-200 hover:shadow-[0_1px_3px_var(--shadow),0_10px_24px_-6px_var(--shadow)]"
             >
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div className="min-w-0">
@@ -72,7 +72,7 @@ export default function AdminRequestsPage() {
                     key={status}
                     type="button"
                     onClick={() => handleStatus(request.id, status)}
-                    className="min-h-9 px-3 rounded-full text-xs font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
+                    className="min-h-11 sm:min-h-9 px-3 rounded-full text-xs font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
                   >
                     Mark {STATUS_LABELS[status]}
                   </button>

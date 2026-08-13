@@ -1,193 +1,106 @@
-# UI Specification (v4 — "Midnight" sleek card reference, electric-blue accent)
+# UI Specification
 
-**Read this before any frontend work.** It replaces the previous spec entirely.
-The visual language is derived from a fintech card-product reference
-(grey.co/cards): a **sleek, high-contrast, near-black canvas**, glass-dark
-floating cards with crisp radii and deep soft shadows, an **electric-blue
-accent pill** for every active/primary control, and a small family of soft
-candy-tinted status colours used sparingly on pills and badges. Behaviour and
-data model live in `CS-Resource-Hub-Design-v1.1.md`; this file governs look,
-feel, and frontend conventions only.
+**Read this before any frontend work.** This is the FINAL visual direction — derived from direct observation of app.studystream.live. Rules are imperative — follow them literally. Behaviour and data model live in `CS-Resource-Hub-Design-v1.1.md`; this file governs look, feel, and frontend conventions.
 
-**Changelog (v3 → v4):** the primary accent moved from a warm orange pill to
-an **electric blue** (`--accent: #2563eb` light / `#7aa8ff` dark), and the
-default canvas shifted from a near-white "airy" surface to a **near-black
-"Midnight" surface** (`--bg: #06070c` dark / a cool near-white `#f2f4f9`
-light), matching the grey.co/cards reference's dark, high-contrast fintech
-look. Because `--accent` is now blue, `--type-notes` (previously blue) moved
-to teal so it stays visually distinct from the accent. Everything else about
-that reference — its card-product marketing content, gradients, and financial
-copy — is explicitly **not** adopted; see the non-negotiables below.
-
-**This is still a course-materials library, not a fintech product.** Take the
-reference's palette, contrast, card style, and polish — never its content. No
-charts, donuts, KPIs, invoices, meetings, or financial anything. The model
-stays **Level → Semester → Course → Resources**.
+The visual language: a **calm, focused, dark-first study tool** — near-black canvas, a slim left icon-rail, generously rounded cards with soft borders and subtle depth, a single bright violet/indigo accent, clean sans type. It is a course-materials **library**, not a social feed — the reference's community/feed/streak/video content is explicitly **not** part of this app; only its palette, card language, and navigation shell are adopted.
 
 ---
 
-## Non-negotiables
+## Non-negotiables (read first)
 
-1. **Never hardcode a colour.** No hex, `rgb()`, or named colours in
-   components or class strings. Semantic tokens only. A missing colour gets a
-   new token in **both** themes in `globals.css` — never an inline value.
-2. **Token names describe role, not appearance** (`--surface`,
-   `--text-muted`, `--type-slides`), so themes swap cleanly. Components never
-   know which theme is active.
-3. **One primary accent: the electric-blue pill.** `--accent` is a blue in
-   both themes (white text via `--accent-fg` in light mode, near-black text in
-   dark mode, since the dark-mode blue is brightened for contrast). It marks
-   the active nav item, segmented-control selection, and every primary button.
-   Nothing else is "primary" — in particular, `--type-notes`'s teal must stay
-   visually distinct from `--accent` and never substitute for it.
-4. **Candy tints are for metadata only.** The soft colour set
-   (`--type-*` pairs) appears on small resource-type badges and pills — a
-   strong colour for text/icon on its `-soft` tint background. Never as page
-   or card washes, never on large surfaces, never as body text colour.
-5. **Sleek, high-contrast, glass-dark by default.** Cards float on the
-   canvas with confident radii (`rounded-2xl`/`rounded-3xl`), generous
-   padding, and deep soft shadows. Depth comes from shadow + fill; a
-   whisper-light border (`--border`) outlines cards in dark mode to read as
-   glass against the near-black canvas.
-6. **Mobile-first and accessible.** Design at ~375 px first; meet the
-   accessibility checklist every time.
-7. **Stay in scope.** Build only the assigned task.
+1. **Never hardcode a colour.** No hex, `rgb()`, or named colours in components or class strings. Use semantic tokens only (see Tokens). If a colour you need has no token, add it to **both** themes in the theme file and ask the human for values — do **not** invent one.
+2. **Dark is the default theme.** Light mode still exists and must work, but the primary experience — and what gets designed/tested first — is dark. This is a reversal from earlier drafts of this spec; do not default to light.
+3. **This is a library, not a social app.** Take the reference's shell, card, and nav *styling* only. Do **not** build a feed, posts, streaks, likes, avatars-of-other-users, or community content. Content stays: Level → Semester → Course → Resources, plus the existing rep/admin tools.
+4. **Icon-rail navigation.** A slim, icon-only left rail (like the reference) replaces/streamlines the previous full-width sidebar for primary navigation, with labels visible on hover/expand or in a secondary panel — not a dense always-expanded text sidebar.
+5. **Rounded, soft-bordered cards with real depth.** Generous corner radius, a soft 1px border plus subtle shadow/glow — cards should feel like distinct floating panels on the dark canvas, not flat rectangles.
+6. **One accent, used with intent.** A bright violet/indigo accent (see Tokens) marks the active nav item, primary buttons, progress indicators, and key highlights — never as a full-surface wash.
+7. **Mobile-first and accessible.** Design for a narrow screen first; meet the accessibility checklist every time.
+8. **Stay in scope.** Build only the assigned task. Do not scaffold auth, backend, or other pages unless told to.
 
 ---
 
 ## Stack & structure
-- Next.js App Router + TypeScript (strict) + Tailwind CSS. Server Components
-  by default; `"use client"` only when interactivity requires it.
-- Pages in `app/`, reusable UI in `components/`, helpers in `lib/`, shared
-  types in `types/`. One component per file, PascalCase.
+- Next.js **App Router** + **TypeScript** (strict) + **Tailwind CSS**.
+- Server Components by default; add `"use client"` only when interactivity requires it.
+- Structure: pages/layouts in `app/`, reusable UI in `components/`, helpers in `lib/`, shared types in `types/`.
+- One component per file, PascalCase. Keep components small and presentational; lift data fetching to the page/server layer.
 - No new dependencies without flagging why.
 
-## Tokens (defined once in `globals.css`, light + dark values for each)
+## Theming & tokens
+All colours, radii, shadows, and spacing come from tokens in **one** place (`globals.css`). Components reference tokens via Tailwind theme classes or `var(--token)`. **Token names are fixed; values are the human's to set** — the values below are the locked direction; do not substitute different colours.
 
-Surfaces & lines:
-- `--bg` — the canvas everything floats on (cool near-white light /
-  near-black "Midnight" dark).
-- `--surface` — cards, bars, drawers.
-- `--surface-2` — input fills, neutral chips, subtle wells inside cards.
-- `--surface-3` — hover fills.
-- `--border` — whisper-light hairlines (does more work in dark mode, where it
-  is what reads as a card's glass edge against the near-black canvas).
-- `--shadow` — the soft card shadow colour. `--scrim` — drawer/modal overlay.
-- `--focus` — visible keyboard-focus ring.
+**Theme switching:** dark is `:root` (default); light values live under `[data-theme="light"]`. Persist the user's choice; on first visit default to dark rather than `prefers-color-scheme` (this app's default identity is dark).
 
-Text:
-- `--text-primary` (near-black ink light / near-white ink dark) ·
-  `--text-muted` (grey) · `--text-subtle` (light grey labels).
+Semantic tokens (dark value → light value):
+- Surfaces: `--bg` (near-black canvas, e.g. `#0c0e13` → light `#f4f5f7`) · `--surface` (card background, e.g. `#151822` → `#ffffff`) · `--surface-2` (rail/nested panels, e.g. `#10121a` → `#f0f1f4`) · `--surface-hover` (subtle lighten on hover)
+- Rail/top bar: `--rail-bg` · `--topbar-bg` (dark, near `--bg`, not a separate light bar) · `--topbar-fg`
+- Text: `--text-primary` (near-white, e.g. `#f3f4f7` → near-black) · `--text-muted` · `--text-subtle`
+- Lines & depth: `--border` (soft, low-contrast — e.g. `rgba(255,255,255,0.08)` in dark) · `--focus` · `--shadow` (soft, slightly glowing in dark mode) · `--scrim`
+- Accent: `--accent` (bright violet/indigo, e.g. `#7c6cf6`) · `--accent-fg` (near-white text on accent, since this accent is saturated/dark enough to take light text — unlike the earlier pastel) · `--accent-subtle` (low-opacity accent tint for active-state backgrounds)
 
-Accent:
-- `--accent` (electric blue) + `--accent-fg` (text on accent). Light:
-  `#2563eb` / white. Dark: `#7aa8ff` / near-black. Used for: primary buttons,
-  active nav pill, active filter/segment pill.
-- `--accent-subtle` — a soft blue tint (light) / translucent blue (dark) for
-  secondary active fills.
+> Exact hex values above are a starting point matching the observed reference; fine-tune for contrast/accessibility, but stay in this violet/indigo family — do not revert to periwinkle or any prior palette.
 
-Resource-type colours (strong + `-soft` tint pairs; role-named):
-- `--type-slides` / `--type-slides-soft` (violet)
-- `--type-notes` / `--type-notes-soft` (teal)
-- `--type-past-question` / `--type-past-question-soft` (rose)
-- `--type-lab-manual` / `--type-lab-manual-soft` (green)
-- `--type-book` / `--type-book-soft` (amber)
-- `--type-other` / `--type-other-soft` (neutral)
-
-Topbar aliases: `--topbar-bg` (equals the canvas — the bar melts into it) and
-`--topbar-fg`.
-
-## Layout
-- **Top bar:** sits ON the canvas (`--topbar-bg` = `--bg`, no heavy border).
-  Its controls float as individual `--surface` rounded-full pills: the search
-  field (pill with icon), circular icon buttons, and an account chip. Theme
-  toggle lives here.
-- **Sidebar:** a floating `--surface` rounded-2xl panel inset from the canvas
-  edge (margin, soft shadow, whisper-light border) — not an edge-to-edge
-  rail. Grouped, expandable nav (Levels → Semesters → Courses). The active
-  level is a full **accent pill**; course sub-items are small rounded-full
-  rows. Collapsible on desktop; off-canvas drawer with scrim on mobile.
-- **Content:** cards and list sections on `--bg`, comfortable gaps
-  (`gap-4`+), sleek but organised. Mixed card sizes welcome.
+## Layout (from the reference)
+- **Left icon rail:** slim (about 56–64px), fixed, full viewport height, dark (`--rail-bg`), icon-only nav (Home/Browse, Search, Uploads [rep], Admin [admin]) with the active item marked by an `--accent` highlight (filled icon, accent background pill, or left accent bar). A small brand mark sits at the top of the rail.
+- **Top strip:** minimal — page title/breadcrumb + search entry point + account avatar + theme toggle. Not a heavy bar; keep it low-height and consistent with the rail's dark tone (no separate light top bar).
+- **Content canvas:** `--bg`, holding rounded `--surface` cards. Comfortable padding, cards read as distinct floating panels via border + soft shadow.
+- **Mobile:** rail collapses to a bottom icon bar or an off-canvas drawer (reuse existing responsive patterns) — same icon set, same active-state treatment.
 
 ## Aesthetic rules
-- **Cards:** `--surface`, `rounded-2xl` (small) to `rounded-3xl` (feature),
-  deep soft shadow (`0 1px 2px` up to `0 8px 24px` of `--shadow`), generous
-  padding (`p-4`–`p-6`). Whisper-light `--border` on cards, especially in
-  dark mode, to read as glass against the near-black canvas.
-- **Pills everywhere:** buttons, filters, badges, and toggles are
-  rounded-full. Primary = accent (blue) pill. Secondary = `--surface` pill
-  with hairline border. Selected filter = accent pill; unselected =
-  `--surface` pill.
-- **Type badges:** small rounded-full pill, `-soft` tint background with the
-  strong type colour as text. This is the app's colour moment.
-- **Typography:** large, confident headings (`text-2xl`+ bold); small muted
-  labels (`text-xs`, sentence case or soft uppercase); tabular numbers for
-  sizes/counts/dates. Course codes render in a small monospace chip on
-  `--surface-2` — the signature detail, keep it.
-- **No analytics content.** Ever.
+- **Depth via border + soft shadow**, not flat rectangles — every card should read as slightly lifted off the canvas, more so than prior "light/airy" drafts of this spec.
+- **Generous corner radius** (~16–20px on cards, ~10–12px on buttons/inputs, pill-shaped on badges/tags).
+- **Confident but quiet type** — clear hierarchy from weight + `--text-primary`/`--text-muted`, not oversized headlines.
+- **Accent discipline** — violet/indigo only on: active rail icon, primary buttons, progress/status accents, key pills (e.g. "N resources"). Always sufficient contrast for its foreground text.
+- **No decorative gradients, no marketing hero art, no feed-style content cards** (avatars posting updates, streak counters, "unlock more" paywalls) — those are the reference's product, not this app's.
+
+## Typography
+- Neutral sans for UI/body (keep Geist / Geist Mono as already set up, unless replaced later). Clear hierarchy via size + weight; muted greys for meta.
+- Tabular numbers for sizes, counts, dates.
+- Course codes (e.g. `CSM 158`) render in a small **monospace** chip — keep this signature detail, restyled to the new dark/rounded card language (dark chip background, light border-tint text).
 
 ## Component conventions
-- **TopBar** — canvas-coloured bar; pill search, circular icon buttons,
-  account chip, theme toggle; role controls render conditionally.
-- **Sidebar** — floating panel with hairline border; accent-pill active
-  level; expandable semesters/courses; collapse control; mobile drawer.
-- **CourseCard** — `--surface` rounded-2xl card with hairline border: mono
-  code chip, bold title, muted lecturer, an "N resources" neutral pill, quiet
-  hover arrow.
-- **ResourceRow** — `--surface` rounded-2xl compact row: coloured type badge
-  (soft tint pill), title, muted year, tabular file size, trailing accent
-  Download/Open pill.
-- **StatCard** — small `--surface` card with a big number and a tiny label
-  (library facts only).
-- **FilterPills** — rounded-full; active = accent pill.
-- **Button** — primary: accent pill (rounded-full). Secondary: `--surface`
-  pill with `--border`. Disabled: 50% opacity.
-- **Drawer / Modal** — `--surface`, `rounded-3xl` (top corners on the mobile
-  sheet), focus-trapped, `Esc` closes, `aria`-labelled.
-- **Toast** — floating `--surface` pill, soft shadow.
-- **EmptyState** — centred, dashed hairline, one line of `--text-muted`.
+Build as reusable components; each handles its states, both themes, and keyboard access.
+- **Rail** — icon-only vertical nav, fixed, full height, dark; active item gets an `--accent` treatment; tooltip or expand-on-hover for labels.
+- **TopStrip** — minimal: title/breadcrumb, search trigger (icon → expands, don't dock a full-width bar), account, theme toggle.
+- **CourseCard** — rounded `--surface` card, soft border + shadow: mono code chip, bold title, muted lecturer, `--accent`-treated "N resources" pill.
+- **ResourceRow** — compact row in a rounded container: type badge, title, muted year, tabular file size, `--accent` Download/Open action.
+- **Pill / Badge** — small, fully rounded; accent for emphasized states, neutral `--surface-2` otherwise.
+- **Button** — primary = `--accent` bg + `--accent-fg`; secondary = `--surface` with `--border`.
+- **Drawer / Modal** — upload & dialogs on `--surface`, rounded, soft shadow; focus-trapped, `Esc` closes, `aria`-labelled.
+- **EmptyState** — centred rounded card, one line of `--text-muted`.
 
-## Theming
-Light is default under `:root`; dark values under `[data-theme="dark"]`
-(attribute set on `<html>` before hydration by the theme script; choice
-persisted; `prefers-color-scheme` respected on first visit). Dark mode is the
-reference personality: near-black "Midnight" canvas, glass-dark cards with a
-hairline border, the accent blue brightens for contrast (`#7aa8ff` with
-near-black text instead of white), candy tints brighten slightly with
-translucent soft variants.
+## Navigation & routes
+- Flow: Level → Semester → Course → Resources, plus global search. Never a feed, board, or dashboard.
+- Routes follow the page inventory: `/login`, onboarding, `/` (browse), `/courses/[code]`, `/search`, `/profile`, rep uploads, `/admin/*`.
+- Reps and admins get **extra controls on shared pages** (rendered by role), not duplicate pages or a separate app shell.
 
 ## Accessibility checklist (every task)
-- Semantic HTML; never a `div` for interactive elements.
-- Visible keyboard focus via `--focus`; full keyboard operability;
-  `aria-expanded` on expandable nav; labelled icon buttons.
-- Text contrast holds in both themes — strong type colours on their soft
-  tints must stay readable; accent pill text is always `--accent-fg`.
-- ~44 px tap targets on mobile; drawers/modals trap focus, `Esc` closes,
-  focus restored on close.
+- Semantic HTML (`nav`, `main`, `button`, `ul/li`); never a `div` for interactive elements.
+- Visible keyboard focus using `--focus`; full keyboard operability; icon-only rail items have accessible labels (`aria-label`), not just tooltips.
+- Sufficient text contrast in **both** themes — dark mode's low-contrast borders (`--border`) are fine for dividers but text must stay high-contrast against `--bg`/`--surface`.
+- All images have `alt`; meaningful icons have accessible labels.
+- Comfortable tap targets on mobile (~44px).
+- Drawers/modals: focus trap, `Esc` to close, restore focus on close.
+- Theme toggle is a labelled control; state exposed to assistive tech.
 
 ## Responsive
-- Mobile-first: sidebar becomes a drawer, grids reflow to one column, no
-  horizontal scroll. Enhance to floating sidebar + multi-column grids at
-  `md`+.
+- Mobile-first: rail becomes a bottom bar or off-canvas drawer; content single-column; no horizontal scroll.
+- Enhance to rail + multi-column card grids at larger breakpoints. Test the narrow view first.
 
 ## Data & state
-- Mock data via the providers only; loading, empty, and error states always
-  rendered; every mutation gives feedback (toast or inline).
-- File size shown next to every download.
+- Use mock/real data via existing providers/API as already wired — never invent a backend or call APIs not in the spec.
+- Always render **loading, empty, and error** states, not just the happy path.
+- Show file size next to every download.
 
-## Anti-patterns — never
-❌ Hardcoded colours. ❌ Appearance-named tokens. ❌ Charts/KPIs/dashboard
-content. ❌ Candy tints on large surfaces or as text on the card fill. ❌
-Heavy borders for depth. ❌ Square corners on interactive pills. ❌ Breaking
-dark mode. ❌ Building beyond the assigned task.
+## Anti-patterns — never do these
+- ❌ Hardcoded colours anywhere. ❌ Feed/posts/streaks/community/video content. ❌ Reverting to periwinkle, the prior light-airy palette, or any earlier direction. ❌ A full-width always-expanded text sidebar (use the icon rail). ❌ Flat cards with no border/shadow depth. ❌ Defaulting to light theme. ❌ Committing `.env`. ❌ Building beyond the assigned task.
 
-## Definition of done
-- [ ] Tokens only; both theme value sets present for any new token.
-- [ ] Works in light AND dark.
-- [ ] Sleek glass-card look; electric-blue accent pill for active/primary;
-      candy tints only on type badges/pills.
-- [ ] Library content, not a dashboard.
+## Definition of done (self-check before finishing)
+- [ ] No hardcoded colours; only semantic tokens; both dark and light values set for any new token.
+- [ ] Dark mode is the default and looks fully intentional (not just an inverted light theme).
+- [ ] Icon rail nav present, active state uses the accent correctly.
+- [ ] Cards read as soft-bordered, shadowed, rounded panels — real depth.
+- [ ] Library content only — no feed/social/streak elements anywhere.
 - [ ] Mobile-first; accessibility checklist met.
 - [ ] Loading/empty/error states handled.
-- [ ] `npm run build` passes.
+- [ ] Only the assigned task was built; `npm run build` passes.

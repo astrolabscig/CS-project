@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, ShieldCheck, UserCircle } from 'lucide-react';
+import { Home, Search, ShieldCheck, Upload, UserCircle } from 'lucide-react';
 import { useSession } from './SessionProvider';
 
 export default function BottomNav() {
@@ -16,6 +16,7 @@ export default function BottomNav() {
   const items = [
     { href: session.role === 'REP' ? '/rep' : '/', label: 'Home', icon: Home },
     { href: '/search', label: 'Search', icon: Search },
+    ...(session.role === 'REP' ? [{ href: '/my-uploads', label: 'Uploads', icon: Upload }] : []),
     ...(session.role === 'SUPER_ADMIN' ? [{ href: '/admin', label: 'Admin', icon: ShieldCheck }] : []),
     { href: '/profile', label: 'Profile', icon: UserCircle },
   ];

@@ -36,24 +36,23 @@ export const metadata: Metadata = {
   },
 };
 
-// Light/dark theme-color mirrors --bg from globals.css so the OS chrome
-// (address bar, status bar) matches the current theme instead of flashing.
+// Mirrors --bg from globals.css. Dark is this app's default identity (not
+// prefers-color-scheme-driven), so the OS chrome defaults to it too — a
+// static <meta> can't read localStorage, so a light-theme visitor's status
+// bar will read dark until they reload; that's a known, accepted gap.
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f2f4f9" },
-    { media: "(prefers-color-scheme: dark)", color: "#06070c" },
-  ],
+  themeColor: "#0c0e13",
 };
 
 // Runs before hydration so the correct theme applies with no flash and no
-// mismatch: stored choice wins, otherwise fall back to prefers-color-scheme.
+// mismatch. Dark is the default identity for this app — first-time visitors
+// get dark regardless of prefers-color-scheme; only an explicit prior choice
+// of light overrides it.
 const THEME_INIT_SCRIPT = `
 (function () {
   try {
     var stored = localStorage.getItem('theme');
-    var theme = stored === 'light' || stored === 'dark'
-      ? stored
-      : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var theme = stored === 'light' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', theme);
   } catch (e) {}
 })();

@@ -50,6 +50,7 @@ cp .env.example .env
 - `EMAIL_SERVER_*` / `EMAIL_FROM` — SMTP credentials for the magic-link sender (Resend or Brevo). `EMAIL_FROM`'s domain must be verified (SPF/DKIM) with that provider or sends will bounce/be filtered.
 - `R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_BUCKET` — Cloudflare R2 S3-compatible credentials for resource file storage.
 - `YOUTUBE_API_KEY` — YouTube Data API v3 key, powers the rep/admin "Suggest videos" review queue on a course page (search.list + videos.list + channels.list). Free tier: ~100 units per suggest run, 10,000 units/day. Optional — leave blank to disable video suggestions; previously-approved videos still display.
+- `GEMINI_API_KEY` — Gemini API key (Google AI Studio), powers the rep/admin "Upload timetable" AI extraction on a course page (gemini-2.0-flash vision). Free tier. Optional — leave blank to disable extraction; reps can still add timetable sessions manually and published timetables still display.
 
 For the required service accounts, data ownership decisions, and release sequence, follow [`docs/PRODUCTION-SETUP.md`](docs/PRODUCTION-SETUP.md).
 

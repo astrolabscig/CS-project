@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar';
 import BottomNav from '@/components/BottomNav';
 import CourseCard from '@/components/CourseCard';
 import StatCard from '@/components/StatCard';
+import DashboardTimetable from '@/components/DashboardTimetable';
 import LandingPage from '@/components/LandingPage';
 import { Level, Semester } from '@/types/resource';
 import { useSession } from '@/components/SessionProvider';
@@ -81,6 +82,8 @@ export default function LibraryPage() {
                 <StatCard label="Resources" value={totalResources} />
                 <StatCard label="Semesters" value={semesters.length} />
               </div>
+
+              <DashboardTimetable level={activeLevel} />
 
               {semesters.map((semester) => {
                 const coursesInSem = coursesByLevel.filter((c) => c.semester === semester);

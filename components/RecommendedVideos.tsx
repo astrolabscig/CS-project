@@ -132,13 +132,13 @@ export default function RecommendedVideos({ course, canUpload }: { course: Cours
               placeholder="Topic (optional), e.g. Binary search trees"
               maxLength={120}
               disabled={suggesting}
-              className="h-9 min-w-0 flex-1 sm:w-56 px-3 rounded-full bg-[var(--surface-2)] border border-transparent text-xs text-[var(--text-primary)] placeholder-[var(--text-subtle)] outline-none focus:border-[var(--focus)] disabled:opacity-50"
+              className="h-11 sm:h-9 min-w-0 flex-1 sm:w-56 px-3 rounded-full bg-[var(--surface-2)] border border-transparent text-xs text-[var(--text-primary)] placeholder-[var(--text-subtle)] outline-none focus:border-[var(--focus)] disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={suggesting || cooldownRemaining > 0}
               aria-live="polite"
-              className="shrink-0 inline-flex items-center gap-1.5 min-h-9 px-3.5 rounded-full bg-[var(--accent)] text-[var(--accent-fg)] text-xs font-semibold disabled:opacity-50"
+              className="shrink-0 inline-flex items-center gap-1.5 min-h-11 sm:min-h-9 px-3.5 rounded-full bg-[var(--accent)] text-[var(--accent-fg)] text-xs font-semibold disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
               {suggestLabel}
@@ -161,7 +161,7 @@ export default function RecommendedVideos({ course, canUpload }: { course: Cours
           </p>
           <ul className="space-y-2">
             {queue.map((v) => (
-              <li key={v.id} className="flex items-center gap-3 bg-[var(--surface-2)] rounded-xl p-2.5">
+              <li key={v.id} className="flex items-center gap-3 bg-[var(--surface-2)] rounded-xl p-2.5 transition-colors duration-150 hover:bg-[var(--surface-3)]">
                 <span className="hidden sm:block shrink-0 w-20 aspect-video rounded-lg overflow-hidden bg-[var(--surface-3)]">
                   {v.thumbnailUrl && (
                     // eslint-disable-next-line @next/next/no-img-element -- external YouTube thumbnail, not a local/optimizable asset
@@ -187,7 +187,7 @@ export default function RecommendedVideos({ course, canUpload }: { course: Cours
                     type="button"
                     onClick={() => handleReview(v.id, 'REJECTED')}
                     aria-label={`Reject ${v.title}`}
-                    className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface)] border border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
+                    className="w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-[var(--surface)] border border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--surface-3)] active:bg-[var(--surface-3)]"
                   >
                     <X className="w-4 h-4" aria-hidden="true" />
                   </button>
@@ -195,7 +195,7 @@ export default function RecommendedVideos({ course, canUpload }: { course: Cours
                     type="button"
                     onClick={() => handleReview(v.id, 'APPROVED')}
                     aria-label={`Approve ${v.title}`}
-                    className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-fg)]"
+                    className="w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-fg)]"
                   >
                     <Check className="w-4 h-4" aria-hidden="true" />
                   </button>

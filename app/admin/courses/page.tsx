@@ -42,21 +42,21 @@ function EditCourseForm({ course, onDone }: { course: Course; onDone: () => void
         aria-label="Course title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full h-9 px-3 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-sm outline-none focus:border-[var(--focus)]"
+        className="w-full h-11 sm:h-9 px-3 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-sm outline-none focus:border-[var(--focus)]"
       />
       <input
         aria-label="Lecturer"
         value={lecturer}
         onChange={(e) => setLecturer(e.target.value)}
         placeholder="Lecturer (optional)"
-        className="w-full h-9 px-3 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] placeholder-[var(--text-subtle)] text-sm outline-none focus:border-[var(--focus)]"
+        className="w-full h-11 sm:h-9 px-3 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] placeholder-[var(--text-subtle)] text-sm outline-none focus:border-[var(--focus)]"
       />
       <div className="flex gap-2">
         <select
           aria-label="Level"
           value={level}
           onChange={(e) => setLevel(Number(e.target.value) as Level)}
-          className="flex-1 h-9 px-2 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-sm outline-none focus:border-[var(--focus)]"
+          className="flex-1 h-11 sm:h-9 px-2 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-sm outline-none focus:border-[var(--focus)]"
         >
           {LEVELS.map((l) => (
             <option key={l} value={l}>
@@ -68,7 +68,7 @@ function EditCourseForm({ course, onDone }: { course: Course; onDone: () => void
           aria-label="Semester"
           value={semester}
           onChange={(e) => setSemester(Number(e.target.value) as Semester)}
-          className="flex-1 h-9 px-2 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-sm outline-none focus:border-[var(--focus)]"
+          className="flex-1 h-11 sm:h-9 px-2 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-sm outline-none focus:border-[var(--focus)]"
         >
           {SEMESTERS.map((s) => (
             <option key={s} value={s}>
@@ -80,14 +80,14 @@ function EditCourseForm({ course, onDone }: { course: Course; onDone: () => void
       <div className="flex gap-2">
         <button
           type="submit"
-          className="flex-1 min-h-9 rounded-full text-xs font-semibold bg-[var(--accent)] text-[var(--accent-fg)]"
+          className="flex-1 min-h-11 sm:min-h-9 rounded-full text-xs font-semibold bg-[var(--accent)] text-[var(--accent-fg)]"
         >
           Save
         </button>
         <button
           type="button"
           onClick={onDone}
-          className="flex-1 min-h-9 rounded-full text-xs font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
+          className="flex-1 min-h-11 sm:min-h-9 rounded-full text-xs font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
         >
           Cancel
         </button>
@@ -251,7 +251,7 @@ export default function AdminCoursesPage() {
               {levelCourses.map((course) => (
                 <div
                   key={course.code}
-                  className="bg-[var(--surface)] rounded-2xl p-5 shadow-[0_1px_3px_var(--shadow)]"
+                  className="bg-[var(--surface)] rounded-2xl p-5 shadow-[0_1px_3px_var(--shadow)] transition-shadow duration-200 hover:shadow-[0_1px_3px_var(--shadow),0_10px_24px_-6px_var(--shadow)]"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
@@ -271,7 +271,7 @@ export default function AdminCoursesPage() {
                       onClick={() => setEditingCode(editingCode === course.code ? null : course.code)}
                       aria-label={`Edit ${course.code}`}
                       aria-expanded={editingCode === course.code}
-                      className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
+                      className="shrink-0 w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-3)] active:bg-[var(--surface-3)]"
                     >
                       <Pencil className="w-4 h-4" />
                     </button>

@@ -39,15 +39,28 @@ export default function ThemeToggle() {
     );
   }
 
+  const isDark = theme === 'dark';
+
   return (
     <button
       type="button"
       onClick={toggle}
-      aria-pressed={theme === 'dark'}
-      aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-      className="w-11 h-11 shrink-0 flex items-center justify-center rounded-full bg-[var(--surface)] shadow-[0_1px_2px_var(--shadow)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
+      aria-pressed={isDark}
+      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+      className="relative w-11 h-11 shrink-0 flex items-center justify-center rounded-full bg-[var(--surface)] shadow-[0_1px_2px_var(--shadow)] text-[var(--text-muted)] hover:bg-[var(--surface-3)] motion-safe:transition-colors motion-safe:duration-150"
     >
-      {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+      <Sun
+        aria-hidden="true"
+        className={`absolute w-5 h-5 motion-safe:transition-all motion-safe:duration-200 motion-safe:ease-out ${
+          isDark ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-50'
+        }`}
+      />
+      <Moon
+        aria-hidden="true"
+        className={`absolute w-5 h-5 motion-safe:transition-all motion-safe:duration-200 motion-safe:ease-out ${
+          isDark ? 'opacity-0 rotate-90 scale-50' : 'opacity-100 rotate-0 scale-100'
+        }`}
+      />
     </button>
   );
 }

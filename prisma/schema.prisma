@@ -50,6 +50,11 @@ enum VideoStatus {
   REJECTED
 }
 
+enum ClassSessionStatus {
+  DRAFT
+  PUBLISHED
+}
+
 
 model User {
   id            String     @id @default(cuid())
@@ -71,6 +76,8 @@ model User {
   auditLogs     AuditLog[] @relation("AuditActor")
   suggestedVideos RecommendedVideo[] @relation("VideoSuggestedBy")
   approvedVideos  RecommendedVideo[] @relation("VideoApprovedBy")
+  createdSessions ClassSession[]     @relation("ClassSessionCreatedBy")
+  uploadedTimetables TimetableUpload[] @relation("TimetableUploadedBy")
   createdAt     DateTime   @default(now())
 }
 
@@ -196,6 +203,55 @@ model RecommendedVideo {
 
   @@unique([courseId, videoId])
   @@index([courseId, status])
+}
+
+// The uploaded timetable file (image/PDF) for one level's timetable. NOT a
+// Resource: Resource.courseId is mandatory, but a level-wide timetable isn't
+// tied to a single course — this is its own small model instead of forcing
+// a course attachment that wouldn't mean anything.
+model TimetableUpload {
+  id             Int            @id @default(autoincrement())
+  levelScope     Int            // 100-400 — the level this timetable covers
+  academicPeriod String         // e.g. "2025/2026 Semester 2", free text
+  storageKey     String         // R2 object key (same bucket as Resource files)
+  fileName       String
+  fileSize       Int
+  mimeType       String
+  uploadedById   String?
+  uploadedBy     User?          @relation("TimetableUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt      DateTime       @default(now())
+  sessions       ClassSession[]
+
+  @@index([levelScope, academicPeriod])
+}
+
+// AI-extracted, approval-gated timetable rows (Gemini vision on an uploaded
+// level timetable image/PDF, e.g. a KNUST exam timetable: one table per
+// level/semester covering every course, keyed by date). Mirrors
+// RecommendedVideo's suggest -> review -> approve pattern: extraction only
+// ever produces DRAFT rows, never visible to students until a rep/admin
+// reviews and publishes them. courseCode/courseTitle are stored as text
+// (not a Course FK) — the timetable may list a course before, or without,
+// a matching Course record existing.
+model ClassSession {
+  id             Int                @id @default(autoincrement())
+  levelScope     Int                // 100-400
+  academicPeriod String             // e.g. "2025/2026 Semester 2"
+  courseCode     String
+  courseTitle    String
+  date           DateTime           @db.Date
+  startTime      String             // 24h "HH:MM"
+  endTime        String             // 24h "HH:MM"
+  venue          String?
+  status         ClassSessionStatus @default(DRAFT)
+  sourceUploadId Int?
+  sourceUpload   TimetableUpload?   @relation(fields: [sourceUploadId], references: [id], onDelete: SetNull)
+  createdById    String?
+  createdBy      User?              @relation("ClassSessionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt      DateTime           @default(now())
+
+  @@index([levelScope, status])
+  @@index([levelScope, academicPeriod])
 }
 
 model MaterialRequest {

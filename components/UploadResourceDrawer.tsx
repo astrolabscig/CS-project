@@ -145,7 +145,7 @@ export default function UploadResourceDrawer({
             role="tab"
             aria-selected={mode === 'file'}
             onClick={() => handleModeChange('file')}
-            className={`min-h-9 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+            className={`min-h-11 sm:min-h-9 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
               mode === 'file' ? 'bg-[var(--accent)] text-[var(--accent-fg)]' : 'text-[var(--text-muted)]'
             }`}
           >
@@ -157,7 +157,7 @@ export default function UploadResourceDrawer({
             role="tab"
             aria-selected={mode === 'link'}
             onClick={() => handleModeChange('link')}
-            className={`min-h-9 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+            className={`min-h-11 sm:min-h-9 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
               mode === 'link' ? 'bg-[var(--accent)] text-[var(--accent-fg)]' : 'text-[var(--text-muted)]'
             }`}
           >
@@ -204,7 +204,7 @@ export default function UploadResourceDrawer({
                   type="button"
                   onClick={handleRemoveFile}
                   aria-label="Remove selected file"
-                  className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
+                  className="shrink-0 w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-3)] active:bg-[var(--surface-3)]"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
                 </button>

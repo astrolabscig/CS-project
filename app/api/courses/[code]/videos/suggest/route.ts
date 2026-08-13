@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { audit, canWriteCourse, jsonError, requireActiveUser, validationError } from '@/lib/api';
 import { prisma } from '@/lib/prisma';
 import { allowRequest } from '@/lib/rateLimit';
-import { YoutubeApiError, suggestVideosForCourse } from '@/lib/youtube';
+import { YoutubeApiError, extractTopicFromResourceTitle, suggestVideosForCourse } from '@/lib/youtube';
 
 export const runtime = 'nodejs';
 type Context = { params: Promise<{ code: string }> };
@@ -35,8 +35,10 @@ export async function POST(request: Request, { params }: Context) {
   }
 
   // A rep-entered topic narrows the search to that specific concept within
-  // the course; otherwise fall back to the course title/code plus its most
-  // recent resource titles as a general-purpose query.
+  // the course. Otherwise, build the query from the *subject* of recently
+  // uploaded material — not the course code or generic resource-type words
+  // ("Slides", "Assignment 2") — falling back to the course name only for
+  // a title that has no meaningful subject left after stripping those.
   let query: string;
   if (topic) {
     query = [topic, course.title].join(' ');
@@ -47,7 +49,9 @@ export async function POST(request: Request, { params }: Context) {
       orderBy: { createdAt: 'desc' },
       take: 5,
     });
-    query = [course.title, course.code, ...topResources.map((r) => r.title)].join(' ');
+    const keywords = topResources.map((r) => extractTopicFromResourceTitle(r.title) || course.title);
+    const uniqueKeywords = Array.from(new Set(keywords)).filter(Boolean);
+    query = uniqueKeywords.length > 0 ? uniqueKeywords.join(' ') : course.title;
   }
 
   const existing = await prisma.recommendedVideo.findMany({ where: { courseId: course.id }, select: { videoId: true } });

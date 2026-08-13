@@ -10,6 +10,44 @@ const MAX_SUGGESTIONS = 5;
 
 export class YoutubeApiError extends Error {}
 
+// Generic resource-metadata words that carry no search-relevant subject
+// matter on their own (resource type, format, and counters/roman numerals
+// like "2" or "II" in "C++ Slides 2"). Stripped so the query is built from
+// the actual topic a rep uploaded material about, not its filing metadata.
+const RESOURCE_TITLE_NOISE_WORDS = new Set([
+  'slides', 'slide', 'notes', 'note', 'lecture', 'lectures', 'past', 'question', 'questions',
+  'assignment', 'assignments', 'solution', 'solutions', 'lab', 'manual', 'book', 'outline',
+  'timetable', 'chapter', 'chapters', 'week', 'weeks', 'part', 'parts', 'pdf', 'doc', 'docx',
+  'ppt', 'pptx', 'handout', 'handouts', 'tutorial', 'tutorials', 'exercise', 'exercises',
+  'quiz', 'quizzes', 'exam', 'exams', 'test', 'tests', 'material', 'materials', 'resource',
+  'resources', 'course', 'unit', 'units', 'topic', 'topics',
+]);
+
+const ROMAN_NUMERAL = /^(i|ii|iii|iv|v|vi|vii|viii|ix|x)$/i;
+
+/**
+ * Pulls the semantic subject out of an uploaded resource's title — e.g.
+ * "C++ Slides 2" -> "C++", "Binary Search Trees Lecture Notes" -> "Binary
+ * Search Trees" — by dropping resource-type/format words and bare
+ * counters. Returns '' when nothing meaningful is left (e.g. "Assignment 3"),
+ * so the caller can fall back to the course name for that title.
+ */
+export function extractTopicFromResourceTitle(title: string): string {
+  const words = title
+    .replace(/[^\p{L}\p{N}+#\s]/gu, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const meaningful = words.filter((word) => {
+    if (RESOURCE_TITLE_NOISE_WORDS.has(word.toLowerCase())) return false;
+    if (/^\d+$/.test(word)) return false;
+    if (word.length <= 4 && ROMAN_NUMERAL.test(word)) return false;
+    return true;
+  });
+
+  return meaningful.join(' ').trim();
+}
+
 export interface YoutubeSuggestion {
   videoId: string;
   title: string;

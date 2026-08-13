@@ -7,6 +7,7 @@ import PageShell from '@/components/PageShell';
 import StatCard from '@/components/StatCard';
 import CourseCard from '@/components/CourseCard';
 import UploadResourceDrawer from '@/components/UploadResourceDrawer';
+import TimetableManagerCard from '@/components/TimetableManagerCard';
 import Drawer from '@/components/Drawer';
 import { useLibrary } from '@/components/LibraryProvider';
 import { useRequireRole } from '@/components/SessionProvider';
@@ -190,6 +191,8 @@ export default function RepDashboardPage() {
               View / manage all your uploads
             </Link>
           </div>
+
+          <TimetableManagerCard levels={myLevels} />
 
           {myLevelCourses.length === 0 ? (
             <div className="mt-6 text-center py-10 text-sm text-[var(--text-muted)] border border-dashed border-[var(--border)] rounded-2xl">

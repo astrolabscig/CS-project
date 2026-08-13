@@ -16,6 +16,17 @@ function academicYearStartMonth(): number {
   return Number.isInteger(raw) && raw >= 1 && raw <= 12 ? raw : DEFAULT_ACADEMIC_YEAR_START_MONTH;
 }
 
+// "YYYY/YYYY" label for the academic year `now` falls in, using the same
+// October-rollover convention as computeKnustLevel. Used to stamp a sensible
+// default academicYear on resources that don't have one supplied by the
+// uploader (e.g. an AI-extracted timetable file).
+export function currentAcademicYearLabel(now: Date = new Date()): string {
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  const startYear = currentMonth < academicYearStartMonth() ? currentYear - 1 : currentYear;
+  return `${startYear}/${startYear + 1}`;
+}
+
 export function computeKnustLevel(indexNumber: string, now: Date = new Date()): KnustLevelResult {
   const trimmed = indexNumber.trim();
   if (!/^\d{7}$/.test(trimmed)) return { status: 'INVALID_FORMAT' };

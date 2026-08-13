@@ -30,7 +30,10 @@ export default function TopBar({ onToggleSidebar }: { onToggleSidebar?: () => vo
   };
 
   return (
-    <header className="sticky top-0 z-40 flex items-center gap-2 sm:gap-3 h-16 px-4 sm:px-6 bg-[var(--topbar-bg)]/85 backdrop-blur-md border-b border-[var(--border)] text-[var(--topbar-fg)]">
+    <header
+      className="sticky top-0 z-40 flex items-center gap-2 sm:gap-3 min-h-16 px-4 sm:px-6 bg-[var(--topbar-bg)]/85 backdrop-blur-md border-b border-[var(--border)] text-[var(--topbar-fg)]"
+      style={{ paddingTop: 'env(safe-area-inset-top)' }}
+    >
       {onToggleSidebar && (
         <button
           type="button"
