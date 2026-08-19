@@ -121,7 +121,7 @@ interface LibraryContextValue {
   requests: MaterialRequest[];
   loading: boolean;
   addCourse: (input: { code: string; title: string; level: Level; semester: Semester; lecturer?: string }) => Promise<MutationResult>;
-  updateCourse: (code: string, patch: Partial<{ title: string; lecturer?: string; level: Level; semester: Semester }>) => Promise<MutationResult>;
+  updateCourse: (code: string, patch: Partial<{ code: string; title: string; lecturer?: string; level: Level; semester: Semester }>) => Promise<MutationResult>;
   removeCourse: (code: string) => Promise<MutationResult>;
   addResource: (input: { courseId: number; title: string; type: ResourceType; academicYear: string; file?: File; externalUrl?: string }) => Promise<MutationResult>;
   removeResource: (id: string) => Promise<MutationResult>;
@@ -217,7 +217,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   );
 
   const updateCourse = useCallback(
-    async (code: string, patch: Partial<{ title: string; lecturer?: string; level: Level; semester: Semester }>): Promise<MutationResult> => {
+    async (code: string, patch: Partial<{ code: string; title: string; lecturer?: string; level: Level; semester: Semester }>): Promise<MutationResult> => {
       try {
         await api(`/api/courses/${encodeURIComponent(code)}`, {
           method: 'PATCH',

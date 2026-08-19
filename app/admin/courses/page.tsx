@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import AdminPageShell from '@/components/AdminPageShell';
 import Drawer from '@/components/Drawer';
+import EditCourseForm from '@/components/EditCourseForm';
 import { useLibrary } from '@/components/LibraryProvider';
 import { useRequireRole } from '@/components/SessionProvider';
 import { useToast } from '@/components/ToastProvider';
@@ -11,90 +12,6 @@ import type { Course, Level, Semester } from '@/types/resource';
 
 const LEVELS: Level[] = [100, 200, 300, 400];
 const SEMESTERS: Semester[] = [1, 2];
-
-function EditCourseForm({ course, onDone }: { course: Course; onDone: () => void }) {
-  const { updateCourse } = useLibrary();
-  const toast = useToast();
-  const [title, setTitle] = useState(course.title);
-  const [lecturer, setLecturer] = useState(course.lecturer ?? '');
-  const [level, setLevel] = useState<Level>(course.level);
-  const [semester, setSemester] = useState<Semester>(course.semester);
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const result = await updateCourse(course.code, {
-      title: title.trim() || course.title,
-      lecturer: lecturer.trim() || undefined,
-      level,
-      semester,
-    });
-    if (!result.ok) {
-      toast(result.error, 'error');
-      return;
-    }
-    toast(`Saved ${course.code}.`);
-    onDone();
-  };
-
-  return (
-    <form onSubmit={handleSave} className="mt-3 space-y-2.5 border-t border-[var(--border)] pt-3">
-      <input
-        aria-label="Course title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full h-11 sm:h-9 px-3 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-sm outline-none focus:border-[var(--focus)]"
-      />
-      <input
-        aria-label="Lecturer"
-        value={lecturer}
-        onChange={(e) => setLecturer(e.target.value)}
-        placeholder="Lecturer (optional)"
-        className="w-full h-11 sm:h-9 px-3 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] placeholder-[var(--text-subtle)] text-sm outline-none focus:border-[var(--focus)]"
-      />
-      <div className="flex gap-2">
-        <select
-          aria-label="Level"
-          value={level}
-          onChange={(e) => setLevel(Number(e.target.value) as Level)}
-          className="flex-1 h-11 sm:h-9 px-2 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-sm outline-none focus:border-[var(--focus)]"
-        >
-          {LEVELS.map((l) => (
-            <option key={l} value={l}>
-              Level {l}
-            </option>
-          ))}
-        </select>
-        <select
-          aria-label="Semester"
-          value={semester}
-          onChange={(e) => setSemester(Number(e.target.value) as Semester)}
-          className="flex-1 h-11 sm:h-9 px-2 rounded-xl bg-[var(--surface-2)] border border-transparent text-[var(--text-primary)] text-sm outline-none focus:border-[var(--focus)]"
-        >
-          {SEMESTERS.map((s) => (
-            <option key={s} value={s}>
-              Semester {s}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="flex gap-2">
-        <button
-          type="submit"
-          className="flex-1 min-h-11 sm:min-h-9 rounded-full text-xs font-semibold bg-[var(--accent)] text-[var(--accent-fg)]"
-        >
-          Save
-        </button>
-        <button
-          type="button"
-          onClick={onDone}
-          className="flex-1 min-h-11 sm:min-h-9 rounded-full text-xs font-semibold border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
-  );
-}
 
 function AddCourseForm({ onDone }: { onDone: () => void }) {
   const { addCourse } = useLibrary();
@@ -306,7 +223,7 @@ export default function AdminCoursesPage() {
                   </div>
 
                   {editingCode === course.code && (
-                    <EditCourseForm course={course} onDone={() => setEditingCode(null)} />
+                    <EditCourseForm course={course} levels={LEVELS} onDone={() => setEditingCode(null)} />
                   )}
                 </div>
               ))}

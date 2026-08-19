@@ -2,10 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Upload } from 'lucide-react';
+import { Pencil, Plus, Upload } from 'lucide-react';
 import PageShell from '@/components/PageShell';
 import StatCard from '@/components/StatCard';
 import CourseCard from '@/components/CourseCard';
+import EditCourseForm from '@/components/EditCourseForm';
 import UploadResourceDrawer from '@/components/UploadResourceDrawer';
 import TimetableManagerCard from '@/components/TimetableManagerCard';
 import Drawer from '@/components/Drawer';
@@ -140,6 +141,7 @@ export default function RepDashboardPage() {
   const { courses, resources } = useLibrary();
   const [uploadCourse, setUploadCourse] = useState<Course | null>(null);
   const [addCourseOpen, setAddCourseOpen] = useState(false);
+  const [editingCode, setEditingCode] = useState<string | null>(null);
 
   const myLevels = useMemo(
     () => (session?.scopes && session.scopes.length > 0 ? session.scopes : session?.level ? [session.level] : []),
@@ -211,14 +213,30 @@ export default function RepDashboardPage() {
                     {inSem.map((course) => (
                       <div key={course.code}>
                         <CourseCard course={course} />
-                        <button
-                          type="button"
-                          onClick={() => setUploadCourse(course)}
-                          className="mt-2 w-full flex items-center justify-center gap-1.5 min-h-9 rounded-full text-xs font-semibold bg-[var(--accent)] text-[var(--accent-fg)]"
-                        >
-                          <Upload className="w-3.5 h-3.5" aria-hidden="true" />
-                          Upload material
-                        </button>
+                        <div className="mt-2 flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setUploadCourse(course)}
+                            className="flex-1 flex items-center justify-center gap-1.5 min-h-9 rounded-full text-xs font-semibold bg-[var(--accent)] text-[var(--accent-fg)]"
+                          >
+                            <Upload className="w-3.5 h-3.5" aria-hidden="true" />
+                            Upload material
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingCode(editingCode === course.code ? null : course.code)}
+                            aria-label={`Edit ${course.code}`}
+                            aria-expanded={editingCode === course.code}
+                            className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:bg-[var(--surface-3)] active:bg-[var(--surface-3)]"
+                          >
+                            <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+                          </button>
+                        </div>
+                        {editingCode === course.code && (
+                          <div className="bg-[var(--surface)] rounded-2xl px-3">
+                            <EditCourseForm course={course} levels={myLevels} onDone={() => setEditingCode(null)} />
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

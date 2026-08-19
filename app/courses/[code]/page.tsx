@@ -11,6 +11,7 @@ import RequestMaterialDrawer from '@/components/RequestMaterialDrawer';
 import RecommendedVideos from '@/components/RecommendedVideos';
 import { useLibrary } from '@/components/LibraryProvider';
 import { useSession } from '@/components/SessionProvider';
+import { useToast } from '@/components/ToastProvider';
 import { RESOURCE_TYPE_LABELS } from '@/lib/resourceType';
 import EmptyState from '@/components/EmptyState';
 import PageHeader from '@/components/PageHeader';
@@ -21,7 +22,8 @@ export default function CourseDetailPage({ params }: { params: Promise<{ code: s
   const courseCode = decodeURIComponent(code);
 
   const { session } = useSession();
-  const { courses, resources: allResources, loading: isLoading } = useLibrary();
+  const { courses, resources: allResources, loading: isLoading, removeResource } = useLibrary();
+  const toast = useToast();
 
   const course = courses.find((c) => c.code.toLowerCase() === courseCode.toLowerCase());
   const resources = useMemo(
@@ -38,6 +40,12 @@ export default function CourseDetailPage({ params }: { params: Promise<{ code: s
     Boolean(course) &&
     (session?.role === 'SUPER_ADMIN' ||
       (session?.role === 'REP' && session.level === course?.level));
+
+  const handleRemoveResource = async (id: string, title: string) => {
+    const result = await removeResource(id);
+    if (result.ok) toast(`Removed "${title}".`);
+    else toast(result.error, 'error');
+  };
 
   const typeOptions = useMemo(
     () => Array.from(new Set(resources.map((r) => RESOURCE_TYPE_LABELS[r.type]))),
@@ -105,7 +113,12 @@ export default function CourseDetailPage({ params }: { params: Promise<{ code: s
       <div className="mt-5 space-y-2">
         {isLoading ? <ResourceListSkeleton /> : filteredResources.length ? (
           filteredResources.map((resource) => (
-            <ResourceRow key={resource.id} resource={resource} />
+            <ResourceRow
+              key={resource.id}
+              resource={resource}
+              canDelete={canUpload}
+              onDelete={() => handleRemoveResource(resource.id, resource.title)}
+            />
           ))
         ) : (
           <EmptyState
