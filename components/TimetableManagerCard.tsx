@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { Plus, Sparkles, Trash2 } from 'lucide-react';
+import { Plus, Sparkles, Trash2, X } from 'lucide-react';
 import { api } from '@/lib/clientApi';
 import { useToast } from './ToastProvider';
 import type { Level } from '@/types/resource';
@@ -43,17 +43,25 @@ export default function TimetableManagerCard({ levels }: { levels: Level[] }) {
   const [now, setNow] = useState(Date.now());
   const [newRow, setNewRow] = useState(EMPTY_ROW);
   const [addingRow, setAddingRow] = useState(false);
+  const [publishedCount, setPublishedCount] = useState(0);
+  const [clearing, setClearing] = useState(false);
 
   const load = useCallback(async () => {
     if (selectedLevel === null) {
       setDraft([]);
+      setPublishedCount(0);
       setLoading(false);
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      setDraft(await api<ClassSessionDto[]>(`/api/timetable?level=${selectedLevel}&status=draft`));
+      const [draftRows, publishedRows] = await Promise.all([
+        api<ClassSessionDto[]>(`/api/timetable?level=${selectedLevel}&status=draft`),
+        api<ClassSessionDto[]>(`/api/timetable?level=${selectedLevel}`),
+      ]);
+      setDraft(draftRows);
+      setPublishedCount(publishedRows.length);
     } catch {
       setError('Could not load the review queue right now.');
     }
@@ -188,6 +196,23 @@ export default function TimetableManagerCard({ levels }: { levels: Level[] }) {
     }
   };
 
+  const handleClear = async () => {
+    if (clearing || selectedLevel === null || (draft.length === 0 && publishedCount === 0)) return;
+    if (!window.confirm(`Delete the entire Level ${selectedLevel} timetable (${draft.length + publishedCount} session${draft.length + publishedCount === 1 ? '' : 's'})? This cannot be undone — you can upload a new file afterwards.`)) {
+      return;
+    }
+    setClearing(true);
+    try {
+      const result = await api<{ deleted: number }>(`/api/timetable?level=${selectedLevel}`, { method: 'DELETE' });
+      toast(`Deleted ${result.deleted} session${result.deleted === 1 ? '' : 's'} — upload a new timetable when ready.`);
+      await load();
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Could not delete the timetable.', 'error');
+    } finally {
+      setClearing(false);
+    }
+  };
+
   if (levels.length === 0) return null;
 
   const uploadLabel = extracting ? 'Reading timetable…' : cooldownRemaining > 0 ? `Wait ${cooldownRemaining}s` : 'Upload timetable';
@@ -262,6 +287,23 @@ export default function TimetableManagerCard({ levels }: { levels: Level[] }) {
           </div>
         </div>
       </div>
+
+      {!loading && (publishedCount > 0 || draft.length > 0) && (
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <p className="text-[11px] text-[var(--text-subtle)]">
+            {publishedCount > 0 ? `${publishedCount} published session${publishedCount === 1 ? '' : 's'} live to students.` : 'Nothing published yet.'}
+          </p>
+          <button
+            type="button"
+            onClick={handleClear}
+            disabled={clearing}
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] disabled:opacity-50"
+          >
+            <X className="w-3 h-3" aria-hidden="true" />
+            {clearing ? 'Deleting…' : `Delete Level ${selectedLevel} timetable`}
+          </button>
+        </div>
+      )}
 
       {error && (
         <p className="text-xs text-[var(--text-muted)] mb-3" role="alert">

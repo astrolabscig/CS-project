@@ -34,3 +34,26 @@ export async function PATCH(request: Request, { params }: Context) {
 
   return Response.json(updated);
 }
+
+// Pulls an already-approved video back out of student view. Reuses REJECTED
+// rather than a new status: the row is kept (not hard-deleted, same as any
+// other rejection — design doc "soft-delete everywhere") and stays excluded
+// from future re-suggestion for this course (see the videoId exclusion list
+// in courses/[code]/videos/suggest), while immediately dropping out of the
+// APPROVED query that feeds the public grid.
+export async function DELETE(_request: Request, { params }: Context) {
+  const user = await requireActiveUser();
+  if (!user) return jsonError('Authentication required', 401);
+
+  const id = parseId((await params).id);
+  if (!id) return jsonError('Invalid video id', 404);
+
+  const video = await prisma.recommendedVideo.findUnique({ where: { id } });
+  if (!video || !await canWriteCourse(user.id, user.role, video.courseId)) return jsonError('Video not found or you do not have access', 404);
+  if (video.status !== 'APPROVED') return jsonError('Only approved videos can be removed');
+
+  const updated = await prisma.recommendedVideo.update({ where: { id: video.id }, data: { status: 'REJECTED' } });
+  await audit(user.id, 'VIDEO_REMOVED', 'RecommendedVideo', updated.id, { courseId: video.courseId });
+
+  return Response.json(updated);
+}

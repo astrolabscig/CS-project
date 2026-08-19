@@ -40,17 +40,19 @@ export default function UploadResourceDrawer({
   const [titleEditedByUser, setTitleEditedByUser] = useState(false);
   const [type, setType] = useState<ResourceType>('SLIDES');
   const [academicYear, setAcademicYear] = useState('2025/2026');
-  const [file, setFile] = useState<File | null>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
+  const [files, setFiles] = useState<{ file: File; error: string | null }[]>([]);
   const [link, setLink] = useState('');
   const [touched, setTouched] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  const isSingleFile = files.length === 1;
+  const hasFileErrors = files.some((entry) => entry.error);
+
   const isValid =
-    title.trim().length > 0 &&
     academicYear.trim().length > 0 &&
-    !fileError &&
-    (mode === 'file' ? Boolean(file) : link.trim().length > 0);
+    (mode === 'file'
+      ? files.length > 0 && !hasFileErrors && (!isSingleFile || title.trim().length > 0)
+      : link.trim().length > 0 && title.trim().length > 0);
 
   const reset = () => {
     setMode('file');
@@ -58,8 +60,7 @@ export default function UploadResourceDrawer({
     setTitleEditedByUser(false);
     setType('SLIDES');
     setAcademicYear('2025/2026');
-    setFile(null);
-    setFileError(null);
+    setFiles([]);
     setLink('');
     setTouched(false);
     setUploading(false);
@@ -70,31 +71,35 @@ export default function UploadResourceDrawer({
     onClose();
   };
 
-  const applySelectedFile = (selected: File | null) => {
-    if (!selected) {
-      setFile(null);
-      setFileError(null);
-      return;
-    }
-    const error = validateFile(selected);
-    setFileError(error);
-    setFile(error ? null : selected);
-    if (!error && !titleEditedByUser) setTitle(titleFromFileName(selected.name));
+  const addSelectedFiles = (selected: FileList | null) => {
+    if (!selected || selected.length === 0) return;
+    const added = Array.from(selected).map((file) => ({ file, error: validateFile(file) }));
+    setFiles((prev) => {
+      const next = [...prev, ...added];
+      if (next.length === 1 && !next[0].error && !titleEditedByUser) setTitle(titleFromFileName(next[0].file.name));
+      return next;
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    applySelectedFile(e.target.files?.[0] ?? null);
+    addSelectedFiles(e.target.files);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleRemoveFile = () => {
-    setFile(null);
-    setFileError(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+  const handleRemoveFile = (index: number) => {
+    setFiles((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      if (next.length !== 1) {
+        if (!titleEditedByUser) setTitle('');
+      } else if (!next[0].error && !titleEditedByUser) {
+        setTitle(titleFromFileName(next[0].file.name));
+      }
+      return next;
+    });
   };
 
   const handleModeChange = (next: 'file' | 'link') => {
     setMode(next);
-    setFileError(null);
   };
 
   const handleTitleChange = (value: string) => {
@@ -109,23 +114,52 @@ export default function UploadResourceDrawer({
 
     setUploading(true);
     try {
-      const result = await addResource({
-        title: title.trim(),
-        courseId: course.id,
-        type,
-        academicYear: academicYear.trim(),
-        file: mode === 'file' ? file ?? undefined : undefined,
-        externalUrl: mode === 'link' ? link.trim() : undefined,
-      });
-
-      if (!result.ok) {
-        toast(result.error, 'error');
-        setUploading(false);
+      if (mode === 'link') {
+        const result = await addResource({
+          title: title.trim(),
+          courseId: course.id,
+          type,
+          academicYear: academicYear.trim(),
+          externalUrl: link.trim(),
+        });
+        if (!result.ok) {
+          toast(result.error, 'error');
+          setUploading(false);
+          return;
+        }
+        toast(`Uploaded "${title.trim()}" to ${course.code}.`);
+        handleClose();
         return;
       }
 
-      toast(`Uploaded "${title.trim()}" to ${course.code}.`);
-      handleClose();
+      let succeeded = 0;
+      let lastError = '';
+      for (const { file } of files) {
+        const result = await addResource({
+          title: isSingleFile ? title.trim() : titleFromFileName(file.name) || file.name,
+          courseId: course.id,
+          type,
+          academicYear: academicYear.trim(),
+          file,
+        });
+        if (result.ok) succeeded += 1;
+        else lastError = result.error;
+      }
+
+      if (succeeded === files.length) {
+        toast(
+          files.length === 1
+            ? `Uploaded "${title.trim()}" to ${course.code}.`
+            : `Uploaded ${succeeded} files to ${course.code}.`
+        );
+        handleClose();
+      } else if (succeeded > 0) {
+        toast(`Uploaded ${succeeded} of ${files.length} files — ${lastError}`, 'error');
+        setUploading(false);
+      } else {
+        toast(lastError || 'Upload could not be completed.', 'error');
+        setUploading(false);
+      }
     } catch {
       toast('Upload could not be completed. Try again.', 'error');
       setUploading(false);
@@ -176,47 +210,60 @@ export default function UploadResourceDrawer({
               ref={fileInputRef}
               type="file"
               accept=".pdf,.docx,.pptx"
+              multiple
               onChange={handleFileChange}
               className="sr-only"
               aria-describedby="upload-file-hint"
             />
-            {!file ? (
+            {files.length === 0 ? (
               <label
                 htmlFor={fileInputId}
                 className="flex flex-col items-center justify-center gap-2 min-h-28 px-4 py-5 rounded-2xl border border-dashed border-[var(--border)] text-center cursor-pointer hover:bg-[var(--surface-2)]"
               >
                 <Upload className="w-5 h-5 text-[var(--text-muted)]" aria-hidden="true" />
-                <span className="text-sm font-medium text-[var(--text-primary)]">Click to choose a file</span>
+                <span className="text-sm font-medium text-[var(--text-primary)]">Click to choose files</span>
                 <span id="upload-file-hint" className="text-xs text-[var(--text-subtle)]">
-                  PDF, DOCX, or PPTX — up to {formatBytes(MAX_FILE_BYTES)}
+                  PDF, DOCX, or PPTX — up to {formatBytes(MAX_FILE_BYTES)} each. Select multiple to upload at once.
                 </span>
               </label>
             ) : (
-              <div className="flex items-center gap-3 min-h-14 px-3.5 py-2.5 rounded-2xl bg-[var(--surface-2)]">
-                <span className="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-[var(--surface)]">
-                  <FileText className="w-4 h-4 text-[var(--text-muted)]" aria-hidden="true" />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[var(--text-primary)] truncate">{file.name}</p>
-                  <p className="text-xs text-[var(--text-muted)]">{formatBytes(file.size)}</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleRemoveFile}
-                  aria-label="Remove selected file"
-                  className="shrink-0 w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-3)] active:bg-[var(--surface-3)]"
+              <div className="space-y-2">
+                <ul className="space-y-2">
+                  {files.map(({ file, error }, index) => (
+                    <li key={`${file.name}-${index}`} className="flex items-center gap-3 min-h-14 px-3.5 py-2.5 rounded-2xl bg-[var(--surface-2)]">
+                      <span className="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-[var(--surface)]">
+                        <FileText className="w-4 h-4 text-[var(--text-muted)]" aria-hidden="true" />
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-[var(--text-primary)] truncate">{file.name}</p>
+                        {error ? (
+                          <p className="text-xs text-[var(--type-past-question)]" role="alert">{error}</p>
+                        ) : (
+                          <p className="text-xs text-[var(--text-muted)]">{formatBytes(file.size)}</p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFile(index)}
+                        aria-label={`Remove ${file.name}`}
+                        className="shrink-0 w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-3)] active:bg-[var(--surface-3)]"
+                      >
+                        <X className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <label
+                  htmlFor={fileInputId}
+                  className="flex items-center justify-center gap-2 min-h-11 px-4 py-2 rounded-xl border border-dashed border-[var(--border)] text-center cursor-pointer hover:bg-[var(--surface-2)]"
                 >
-                  <X className="w-4 h-4" aria-hidden="true" />
-                </button>
+                  <Upload className="w-4 h-4 text-[var(--text-muted)]" aria-hidden="true" />
+                  <span className="text-xs font-medium text-[var(--text-primary)]">Add more files</span>
+                </label>
               </div>
             )}
-            {fileError && (
-              <p className="mt-1.5 text-xs text-[var(--type-past-question)]" role="alert">
-                {fileError}
-              </p>
-            )}
-            {touched && !file && !fileError && (
-              <p className="mt-1.5 text-xs text-[var(--text-muted)]">Choose a file to upload.</p>
+            {touched && files.length === 0 && (
+              <p className="mt-1.5 text-xs text-[var(--text-muted)]">Choose at least one file to upload.</p>
             )}
           </div>
         ) : (
@@ -242,28 +289,37 @@ export default function UploadResourceDrawer({
           </div>
         )}
 
-        <div>
-          <label htmlFor="upload-title" className={labelClass}>
-            Title
-          </label>
-          <input
-            id="upload-title"
-            type="text"
-            value={title}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            placeholder="e.g. Lecture Slides – Week 3"
-            className={inputClass}
-            aria-describedby="upload-title-hint"
-          />
-          <p id="upload-title-hint" className="mt-1.5 text-xs text-[var(--text-subtle)]">
-            {mode === 'file'
-              ? 'Filled in from the file name — edit it to save under a different title.'
-              : 'What students will see for this link.'}
-          </p>
-          {touched && !title.trim() && (
-            <p className="mt-1.5 text-xs text-[var(--text-muted)]">Title is required.</p>
-          )}
-        </div>
+        {mode === 'link' || isSingleFile ? (
+          <div>
+            <label htmlFor="upload-title" className={labelClass}>
+              Title
+            </label>
+            <input
+              id="upload-title"
+              type="text"
+              value={title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              placeholder="e.g. Lecture Slides – Week 3"
+              className={inputClass}
+              aria-describedby="upload-title-hint"
+            />
+            <p id="upload-title-hint" className="mt-1.5 text-xs text-[var(--text-subtle)]">
+              {mode === 'file'
+                ? 'Filled in from the file name — edit it to save under a different title.'
+                : 'What students will see for this link.'}
+            </p>
+            {touched && !title.trim() && (
+              <p className="mt-1.5 text-xs text-[var(--text-muted)]">Title is required.</p>
+            )}
+          </div>
+        ) : (
+          mode === 'file' &&
+          files.length > 1 && (
+            <p className="text-xs text-[var(--text-subtle)]">
+              Each file will be uploaded under a title taken from its own file name.
+            </p>
+          )
+        )}
 
         <div className="grid grid-cols-2 gap-3">
           <div>

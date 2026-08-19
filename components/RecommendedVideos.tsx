@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Check, ExternalLink, Sparkles, X } from 'lucide-react';
+import { Check, ExternalLink, Sparkles, Trash2, X } from 'lucide-react';
 import { api } from '@/lib/clientApi';
 import { useToast } from './ToastProvider';
 import type { Course } from '@/types/resource';
@@ -110,6 +110,16 @@ export default function RecommendedVideos({ course, canUpload }: { course: Cours
       await load();
     } catch (err) {
       toast(err instanceof Error ? err.message : 'Could not update this video.', 'error');
+    }
+  };
+
+  const handleDelete = async (id: number, title: string) => {
+    try {
+      await api(`/api/videos/${id}`, { method: 'DELETE' });
+      toast(`Removed "${title}" from recommended videos.`);
+      await load();
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Could not remove this video.', 'error');
     }
   };
 
@@ -225,28 +235,37 @@ export default function RecommendedVideos({ course, canUpload }: { course: Cours
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {approved.map((v) => (
-            <a
+            <div
               key={v.id}
-              href={v.youtubeUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="group block min-w-0 rounded-2xl overflow-hidden bg-[var(--surface)] border border-[var(--border)] shadow-[0_1px_2px_var(--shadow)] transition-shadow duration-200 hover:shadow-[0_12px_28px_-8px_var(--shadow)]"
+              className="group relative min-w-0 rounded-2xl overflow-hidden bg-[var(--surface)] border border-[var(--border)] shadow-[0_1px_2px_var(--shadow)] transition-shadow duration-200 hover:shadow-[0_12px_28px_-8px_var(--shadow)]"
             >
-              <div className="aspect-video bg-[var(--surface-2)]">
-                {v.thumbnailUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element -- external YouTube thumbnail, not a local/optimizable asset
-                  <img src={v.thumbnailUrl} alt="" className="w-full h-full object-cover" />
-                )}
-              </div>
-              <div className="min-w-0 p-3">
-                <p className="min-w-0 text-sm font-semibold text-[var(--text-primary)] line-clamp-2 break-words">{v.title}</p>
-                <p className="mt-1 min-w-0 text-xs text-[var(--text-muted)] truncate">{v.channelName}</p>
-                <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-[var(--text-subtle)]">
-                  {formatCount(v.viewCount)} views
-                  <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
-                </span>
-              </div>
-            </a>
+              {canUpload && (
+                <button
+                  type="button"
+                  onClick={() => handleDelete(v.id, v.title)}
+                  aria-label={`Remove ${v.title}`}
+                  className="absolute top-2 right-2 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-[var(--scrim)] text-[var(--text-primary)] backdrop-blur-sm hover:bg-[var(--surface-3)] active:bg-[var(--surface-3)]"
+                >
+                  <Trash2 className="w-4 h-4" aria-hidden="true" />
+                </button>
+              )}
+              <a href={v.youtubeUrl} target="_blank" rel="noreferrer" className="block min-w-0">
+                <div className="aspect-video bg-[var(--surface-2)]">
+                  {v.thumbnailUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element -- external YouTube thumbnail, not a local/optimizable asset
+                    <img src={v.thumbnailUrl} alt="" className="w-full h-full object-cover" />
+                  )}
+                </div>
+                <div className="min-w-0 p-3">
+                  <p className="min-w-0 text-sm font-semibold text-[var(--text-primary)] line-clamp-2 break-words">{v.title}</p>
+                  <p className="mt-1 min-w-0 text-xs text-[var(--text-muted)] truncate">{v.channelName}</p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-[var(--text-subtle)]">
+                    {formatCount(v.viewCount)} views
+                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+                  </span>
+                </div>
+              </a>
+            </div>
           ))}
         </div>
       )}

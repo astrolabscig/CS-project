@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { canWriteLevel, jsonError, levels, readableLevels, requireActiveUser, validationError } from '@/lib/api';
+import { audit, canWriteLevel, jsonError, levels, readableLevels, requireActiveUser, validationError } from '@/lib/api';
 import { prisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
@@ -63,4 +63,22 @@ export async function POST(request: Request) {
   });
 
   return Response.json(session, { status: 201 });
+}
+
+const deleteQuerySchema = z.object({ level: levelSchema });
+
+// Wipes every row (draft + published) for a level so a rep/admin can start
+// over with a fresh upload, instead of deleting one row at a time.
+export async function DELETE(request: Request) {
+  const user = await requireActiveUser();
+  if (!user) return jsonError('Authentication required', 401);
+
+  const query = deleteQuerySchema.safeParse(Object.fromEntries(new URL(request.url).searchParams));
+  if (!query.success) return validationError(query.error);
+  if (!await canWriteLevel(user.id, user.role, query.data.level)) return jsonError('You cannot edit this level\'s timetable', 403);
+
+  const { count } = await prisma.classSession.deleteMany({ where: { levelScope: query.data.level } });
+  await audit(user.id, 'TIMETABLE_CLEARED', 'ClassSession', query.data.level, { levelScope: query.data.level, count });
+
+  return Response.json({ deleted: count });
 }

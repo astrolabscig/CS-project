@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Pencil, Plus } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import AdminPageShell from '@/components/AdminPageShell';
 import Drawer from '@/components/Drawer';
 import { useLibrary } from '@/components/LibraryProvider';
@@ -216,11 +216,28 @@ function AddCourseForm({ onDone }: { onDone: () => void }) {
 
 export default function AdminCoursesPage() {
   const { permitted } = useRequireRole(['SUPER_ADMIN']);
-  const { courses } = useLibrary();
+  const { courses, removeCourse } = useLibrary();
+  const toast = useToast();
   const [editingCode, setEditingCode] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [deletingCode, setDeletingCode] = useState<string | null>(null);
 
   if (!permitted) return null;
+
+  const handleDelete = async (course: Course) => {
+    const confirmed = window.confirm(
+      `Delete ${course.code} — ${course.title}?\n\nThis permanently deletes the course and all ${course.resourceCount} of its resources (files included). This cannot be undone.`
+    );
+    if (!confirmed) return;
+    setDeletingCode(course.code);
+    const result = await removeCourse(course.code);
+    setDeletingCode(null);
+    if (!result.ok) {
+      toast(result.error, 'error');
+      return;
+    }
+    toast(`Deleted ${course.code}.`);
+  };
 
   return (
     <AdminPageShell>
@@ -266,15 +283,26 @@ export default function AdminCoursesPage() {
                         {course.resourceCount} resources
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setEditingCode(editingCode === course.code ? null : course.code)}
-                      aria-label={`Edit ${course.code}`}
-                      aria-expanded={editingCode === course.code}
-                      className="shrink-0 w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-3)] active:bg-[var(--surface-3)]"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setEditingCode(editingCode === course.code ? null : course.code)}
+                        aria-label={`Edit ${course.code}`}
+                        aria-expanded={editingCode === course.code}
+                        className="w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-3)] active:bg-[var(--surface-3)]"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(course)}
+                        disabled={deletingCode === course.code}
+                        aria-label={`Delete ${course.code}`}
+                        className="w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-3)] active:bg-[var(--surface-3)] disabled:opacity-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
 
                   {editingCode === course.code && (

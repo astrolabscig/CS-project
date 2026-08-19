@@ -122,6 +122,7 @@ interface LibraryContextValue {
   loading: boolean;
   addCourse: (input: { code: string; title: string; level: Level; semester: Semester; lecturer?: string }) => Promise<MutationResult>;
   updateCourse: (code: string, patch: Partial<{ title: string; lecturer?: string; level: Level; semester: Semester }>) => Promise<MutationResult>;
+  removeCourse: (code: string) => Promise<MutationResult>;
   addResource: (input: { courseId: number; title: string; type: ResourceType; academicYear: string; file?: File; externalUrl?: string }) => Promise<MutationResult>;
   removeResource: (id: string) => Promise<MutationResult>;
   updateUser: (
@@ -227,6 +228,19 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
         return { ok: true };
       } catch (error) {
         return { ok: false, error: errorMessage(error, 'Could not save course.') };
+      }
+    },
+    [refresh]
+  );
+
+  const removeCourse = useCallback(
+    async (code: string): Promise<MutationResult> => {
+      try {
+        await api(`/api/courses/${encodeURIComponent(code)}`, { method: 'DELETE' });
+        await refresh();
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: errorMessage(error, 'Could not delete course.') };
       }
     },
     [refresh]
@@ -353,6 +367,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
     loading: !ready,
     addCourse,
     updateCourse,
+    removeCourse,
     addResource,
     removeResource,
     updateUser,

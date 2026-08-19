@@ -1,4 +1,4 @@
-export const MAX_FILE_SIZE = 15 * 1024 * 1024;
+export const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
 export const ACCEPTED_FILES: Record<string, { label: string; extensions: string[]; signature: 'pdf' | 'docx' | 'pptx' }> = {
   'application/pdf': { label: 'PDF', extensions: ['.pdf'], signature: 'pdf' },
@@ -50,7 +50,7 @@ function hasSignature(bytes: Uint8Array, signature: 'pdf' | 'docx' | 'pptx') {
 export async function validateUploadedFile(file: File): Promise<string | null> {
   const accepted = ACCEPTED_FILES[file.type];
   if (!accepted) return 'Only PDF, DOCX, and PPTX files are accepted.';
-  if (file.size === 0 || file.size > MAX_FILE_SIZE) return 'File must be between 1 byte and 15 MB.';
+  if (file.size === 0 || file.size > MAX_FILE_SIZE) return 'File must be between 1 byte and 25 MB.';
   const lowerName = file.name.toLowerCase();
   if (!accepted.extensions.some((extension) => lowerName.endsWith(extension))) return 'The file extension does not match its declared type.';
   const bytes = new Uint8Array(await file.arrayBuffer());
@@ -87,7 +87,7 @@ function hasImageSignature(bytes: Uint8Array, mimeType: string): boolean {
 export async function validateTimetableFile(file: File): Promise<string | null> {
   const accepted = ACCEPTED_TIMETABLE_FILES[file.type];
   if (!accepted) return 'Only PDF, JPEG, PNG, or WebP files are accepted.';
-  if (file.size === 0 || file.size > MAX_FILE_SIZE) return 'File must be between 1 byte and 15 MB.';
+  if (file.size === 0 || file.size > MAX_FILE_SIZE) return 'File must be between 1 byte and 25 MB.';
   const lowerName = file.name.toLowerCase();
   if (!accepted.extensions.some((extension) => lowerName.endsWith(extension))) return 'The file extension does not match its declared type.';
   const bytes = new Uint8Array(await file.arrayBuffer());
