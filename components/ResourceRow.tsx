@@ -1,10 +1,18 @@
 'use client';
 
-import { Download, ExternalLink } from 'lucide-react';
+import { Download, ExternalLink, Trash2 } from 'lucide-react';
 import { Resource } from '@/types/resource';
 import { RESOURCE_TYPE_BADGE_CLASSES, RESOURCE_TYPE_LABELS } from '@/lib/resourceType';
 
-export default function ResourceRow({ resource }: { resource: Resource }) {
+export default function ResourceRow({
+  resource,
+  canDelete,
+  onDelete,
+}: {
+  resource: Resource;
+  canDelete?: boolean;
+  onDelete?: () => void;
+}) {
   const isExternal = Boolean(resource.externalUrl);
 
   const handleAction = () => {
@@ -52,6 +60,17 @@ export default function ResourceRow({ resource }: { resource: Resource }) {
           </>
         )}
       </button>
+
+      {canDelete && (
+        <button
+          type="button"
+          onClick={onDelete}
+          aria-label={`Delete ${resource.title}`}
+          className="shrink-0 w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-2)] active:bg-[var(--surface-2)]"
+        >
+          <Trash2 className="w-4 h-4" aria-hidden="true" />
+        </button>
+      )}
     </div>
   );
 }
